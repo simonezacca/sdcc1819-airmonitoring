@@ -57,7 +57,7 @@ services:
         stdin_open: true
         tty: true
         volumes:
-            - dataset-sender:/dataset-sender
+            - ./dataset-sender:/dataset-sender
             #- ../sdcc1819-airmonitoring:/dataset-producer
 
     kafka-consumer:
@@ -82,5 +82,5 @@ services:
         stdin_open: true
         tty: true
         volumes:
-            - dataset-sender:/dataset-sender
+            - ./dataset-sender:/dataset-sender
             #- ../sdcc1819-airmonitoring:/dataset-consumer
