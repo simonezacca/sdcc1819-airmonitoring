@@ -1,10 +1,5 @@
 version: "2"
 
-#networks:
-#    custom_network: 
-#        external:
-#            name: kafkanet
-
 networks: 
     custom_network:
         driver: bridge
@@ -23,7 +18,6 @@ services:
             - ALLOW_ANONYMOUS_LOGIN=yes
     
     kafka:
-        #image: matnar/kafka
         image: wurstmeister/kafka
         container_name: kafka
         hostname: kafka
@@ -42,7 +36,6 @@ services:
             - KAFKA_CREATE_TOPICS=topicProva:1:1
 
     kafka-producer:
-        #image: matnar/kafka
         image: wurstmeister/kafka
         container_name: kafka-producer
         hostname: kafka-producer
@@ -64,10 +57,10 @@ services:
         stdin_open: true
         tty: true
         volumes:
-            - ../sdcc1819-airmonitoring:/dataset-producer
+            - dataset-sender:/dataset-sender
+            #- ../sdcc1819-airmonitoring:/dataset-producer
 
     kafka-consumer:
-        #image: matnar/kafka
         image: wurstmeister/kafka
         container_name: kafka-consumer
         hostname: kafka-consumer
@@ -89,4 +82,5 @@ services:
         stdin_open: true
         tty: true
         volumes:
-            - ../sdcc1819-airmonitoring:/dataset-consumer
+            - dataset-sender:/dataset-sender
+            #- ../sdcc1819-airmonitoring:/dataset-consumer
