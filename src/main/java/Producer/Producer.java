@@ -36,7 +36,7 @@ public class Producer {
 
 
     private void sendToTopic(Data value) {
-        ProducerRecord record = new ProducerRecord(topicName, value);
+        ProducerRecord record = new ProducerRecord(topicName, value.toString());
         try {
             kafkaProducer.send(record);
             System.out.println("Producer send: " + value.toString());
@@ -50,6 +50,7 @@ public class Producer {
     public void produceRecords() {
 
         ArrayList<Data> records = parserCSV.parseFile();
+        System.out.println("file parsato!!");
         for( Data d : records){
 
             try {

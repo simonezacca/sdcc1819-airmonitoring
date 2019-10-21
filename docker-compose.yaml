@@ -1,0 +1,85 @@
+version: "2"
+
+networks:
+    custom_network: 
+        external:
+            name: kafkanet
+
+services:
+
+    zookeeper:
+        image: zookeeper
+        container_name: zookeeper
+        hostname: zookeeper
+        networks: 
+            - custom_network
+        ports:
+            - '2181:2181'
+        environment:
+            - ALLOW_ANONYMOUS_LOGIN=yes
+    
+    kafka:
+        image: matnar/kafka
+        container_name: kafka
+        hostname: kafka
+        networks: 
+            - custom_network
+        ports:
+            - '9092:9092'
+        depends_on:
+            - zookeeper
+        environment:
+            - KAFKA_ADVERTISED_HOST_NAME=kafka
+            - BROKER_ID=0
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+            - KAFKA_LOG_RETENTION_HOURS=1
+            - KAFKA_MESSAGE_MAX_BYTES=2000000000
+            - KAFKA_CREATE_TOPICS=topicProva:1:1
+
+    kafka-producer:
+        image: matnar/kafka
+        container_name: kafka-producer
+        hostname: kafka-producer
+        networks: 
+            - custom_network
+        expose:
+            - "5005" # remote intellij debug
+        ports:
+            - "5005:5005" # remote intellij debug
+        depends_on:
+            - zookeeper
+            - kafka
+        environment:
+            - KAFKA_ADVERTISED_HOST_NAME=kafka
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+            - KAFKA_LOG_RETENTION_HOURS=1
+            - KAFKA_MESSAGE_MAX_BYTES=2000000000
+        entrypoint: /bin/sh
+        stdin_open: true
+        tty: true
+        volumes:
+            - ../sdcc1819-airmonitoring:/dataset-producer
+
+    kafka-consumer:
+        image: matnar/kafka
+        container_name: kafka-consumer
+        hostname: kafka-consumer
+        networks: 
+            - custom_network
+        expose:
+            - "5006" # remote intellij debug
+        ports:
+            - "5006:5006" # remote intellij debug
+        depends_on:
+            - zookeeper
+            - kafka
+        environment:
+            - KAFKA_ADVERTISED_HOST_NAME=kafka
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+            - KAFKA_LOG_RETENTION_HOURS=1
+            - KAFKA_MESSAGE_MAX_BYTES=2000000000
+        entrypoint: /bin/sh
+        stdin_open: true
+        tty: true
+        volumes:
+            - ../sdcc1819-airmonitoring:/dataset-consumer

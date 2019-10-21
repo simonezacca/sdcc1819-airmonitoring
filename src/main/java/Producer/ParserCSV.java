@@ -1,13 +1,11 @@
 package Producer;
 
 import Util.Data;
-import javafx.util.Pair;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.BufferedReader;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -32,7 +30,6 @@ public class ParserCSV {
 
     public void initParserCSV(){
         try {
-
             bufferedReader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH));
             csvParser = new CSVParser(bufferedReader, CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
@@ -47,16 +44,22 @@ public class ParserCSV {
 
 
     public ArrayList<Data> parseFile(){
-
+        int i = 0;
         for (CSVRecord csvRecord : csvParser) {
             // Accessing Values by Column Index
+            if(i==20){
+                break;
+            }
             String DATE = csvRecord.get("date");
             LocalDateTime formatDateTime = LocalDateTime.parse(DATE, formatter);
-            double NO = Double.valueOf(csvRecord.get("NO"));
-
+            double NO = Double.parseDouble(csvRecord.get("NO"));
+            //System.out.println("formatDate: " + formatDateTime);
+            //System.out.println("NO: " + NO);
             Data d = new Data(formatDateTime, NO);
             dataToSend.add(d);
+            i++;
         }
+        System.out.println("parsing finito!");
         return dataToSend;
     }
 
