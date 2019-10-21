@@ -84,3 +84,62 @@ services:
         volumes:
             - ./dataset-sender:/dataset-sender
             #- ../sdcc1819-airmonitoring:/dataset-consumer
+
+
+    influxdb:
+        image: influxdb
+        container_name: influxdb
+        hostname: influxdb
+        networks:
+          - custom_network
+        expose:
+          - "8083"
+          - "8086"
+        ports:
+          - "8086:8086"     #HTTP API port
+          - "8083:8083"     #administrator interface port
+        environment:
+            - INFLUX_DB=db0
+            - INFLUXDB_CONFIG_PATH=/etc/influxdb/influxdb.conf
+        volumes:
+            - ./influxdb:/var/lib/influxdb
+
+
+    telegraf:
+        image: telegraf
+        container_name: telegraf
+        hostname: telegraf
+        networks:
+          - custom_network
+        expose:
+          - "8125"
+          - "8092"
+          - "8094"
+        ports:
+          - "8125:8125"
+          - "8092:8092"
+          - "8094:8094"
+        depends_on:
+          - influxdb
+        environment:
+            - INFLUXDB_URL=http://influxdb:8086
+        volumes:
+          - ./telegraf:/var/lib/telegraf
+
+
+    chronograf:
+        image: chronograf
+        container_name: chronograf
+        hostname: chronograf
+        networks:
+            - custom_network
+        expose:
+            - "8888"
+        ports:
+            - "8888:8888"
+        depends_on:
+            - influxdb
+        environment:
+            - INFLUXDB_URL=http://influxdb:8086
+        volumes:
+          - ./chronograf:/var/lib/chronograf
