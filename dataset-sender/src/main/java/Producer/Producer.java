@@ -36,7 +36,7 @@ public class Producer {
 
 
     private void sendToTopic(Data value) {
-        ProducerRecord record = new ProducerRecord(topicName, value.toString());
+        ProducerRecord record = new ProducerRecord(topicName, value.toJson());
         try {
             kafkaProducer.send(record);
             System.out.println("Producer send: " + value.toString());
