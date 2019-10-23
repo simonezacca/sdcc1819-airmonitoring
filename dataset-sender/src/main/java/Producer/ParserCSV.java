@@ -1,6 +1,7 @@
 package Producer;
 
 import Util.Data;
+import Util.MyJsonSerializer;
 import Util.Sensor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -101,40 +102,40 @@ public class ParserCSV {
             String NMHC, String NO_2, String NOx, String O_3, String SO_2, String TCH){
         Sensor s = new Sensor(sensorID);
         if(NO != null){
-            s.setNO(NO);
+            s.setNO(Double.parseDouble(NO));
         }
         if(CO != null){
-            s.setCO(CO);
+            s.setCO(Double.parseDouble(CO));
         }
         if(PM10 != null){
-            s.setPM10(PM10);
+            s.setPM10(Double.parseDouble(PM10));
         }
         if(BEN != null){
-            s.setBEN(BEN);
+            s.setBEN(Double.parseDouble(BEN));
         }
         if(CH4 != null){
-            s.setCH4(CH4);
+            s.setCH4(Double.parseDouble(CH4));
         }
         if(EBE != null){
-            s.setEBE(EBE);
+            s.setEBE(Double.parseDouble(EBE));
         }
         if(NMHC != null){
-            s.setNMHC(NMHC);
+            s.setNMHC(Double.parseDouble(NMHC));
         }
         if(NO_2 != null){
-            s.setNO_2(NO_2);
+            s.setNO_2(Double.parseDouble(NO_2));
         }
         if(NOx != null){
-            s.setNOx(NOx);
+            s.setNOx(Double.parseDouble(NOx));
         }
         if(O_3 != null){
-            s.setO_3(O_3);
+            s.setO_3(Double.parseDouble(O_3));
         }
         if(SO_2 != null){
-            s.setSO_2(SO_2);
+            s.setSO_2(Double.parseDouble(SO_2));
         }
         if(TCH != null){
-            s.setTCH(TCH);
+            s.setTCH(Double.parseDouble(TCH));
         }
         return s;
     }
@@ -143,7 +144,7 @@ public class ParserCSV {
         ParserCSV ps = new ParserCSV("/home/andrea/IdeaProjects/sdcc1819-airmonitoring/docker-compose/dataset-sender/madrid_2018_h1000.csv");
         ps.initParserCSV();
         for(Data d: ps.parseFile()){
-            System.out.println("\ndata: " + d.toString());
+            System.out.println("\ndata: " + MyJsonSerializer.serialize(d));
         }
     }
 

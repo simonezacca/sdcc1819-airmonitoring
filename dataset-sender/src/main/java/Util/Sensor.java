@@ -3,18 +3,18 @@ package Util;
 public class Sensor {
 
     private long sensorID;
-    private String NO;
-    private String CO;
-    private String PM10;
-    private String BEN;
-    private String CH4;
-    private String EBE;
-    private String NMHC;
-    private String NO_2;
-    private String NOx;
-    private String O_3;
-    private String SO_2;
-    private String TCH;
+    private double NO;
+    private double CO;
+    private double PM10;
+    private double BEN;
+    private double CH4;
+    private double EBE;
+    private double NMHC;
+    private double NO_2;
+    private double NOx;
+    private double O_3;
+    private double SO_2;
+    private double TCH;
 
 
     public Sensor(long sensorID) {
@@ -48,51 +48,51 @@ public class Sensor {
         this.sensorID = sensorID;
     }
 
-    public void setNO(String NO) {
+    public void setNO(double NO) {
         this.NO = NO;
     }
 
-    public void setCO(String CO) {
+    public void setCO(double CO) {
         this.CO = CO;
     }
 
-    public void setPM10(String PM10) {
+    public void setPM10(double PM10) {
         this.PM10 = PM10;
     }
 
-    public void setBEN(String BEN) {
+    public void setBEN(double BEN) {
         this.BEN = BEN;
     }
 
-    public void setCH4(String CH4) {
+    public void setCH4(double CH4) {
         this.CH4 = CH4;
     }
 
-    public void setEBE(String EBE) {
+    public void setEBE(double EBE) {
         this.EBE = EBE;
     }
 
-    public void setNMHC(String NMHC) {
+    public void setNMHC(double NMHC) {
         this.NMHC = NMHC;
     }
 
-    public void setNO_2(String NO_2) {
+    public void setNO_2(double NO_2) {
         this.NO_2 = NO_2;
     }
 
-    public void setNOx(String NOx) {
+    public void setNOx(double NOx) {
         this.NOx = NOx;
     }
 
-    public void setO_3(String o_3) {
+    public void setO_3(double o_3) {
         O_3 = o_3;
     }
 
-    public void setSO_2(String SO_2) {
+    public void setSO_2(double SO_2) {
         this.SO_2 = SO_2;
     }
 
-    public void setTCH(String TCH) {
+    public void setTCH(double TCH) {
         this.TCH = TCH;
     }
 }
