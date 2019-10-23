@@ -5,45 +5,45 @@ import java.util.ArrayList;
 
 public class Data {
 
-    private LocalDateTime date;
+    private LocalDateTime datetime;
     private long sensing_group_id;
-    private ArrayList<Sensor> sensors = null;
+    private ArrayList<Sensor> measurements = null;
 
-    public Data(LocalDateTime date, long sensing_group_id) {
-        this.date = date;
+    public Data(LocalDateTime dateTime, long sensing_group_id) {
+        this.datetime = dateTime;
         this.sensing_group_id = sensing_group_id;
     }
 
     @Override
     public String toString() {
         return "Data{" +
-                "date=" + date +
+                "dateTime=" + datetime +
                 ", sensing_group_id=" + sensing_group_id +
-                ", sensors=" + sensors +
+                ", measurements=" + measurements +
                 '}';
     }
 
     public String toJson() {
         return "{" +
-                "\"date\":\"" + date + "\"" +
+                "\"date\":\"" + datetime + "\"" +
                 ", \"NO\":" + "NO" +
                 '}';
     }
 
-    public LocalDateTime getDate() {
-        return date;
+    public LocalDateTime getDatetime() {
+        return datetime;
     }
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
+    public void setDatetime(LocalDateTime datetime) {
+        this.datetime = datetime;
     }
 
     public void setSensing_group_id(long sensing_group_id) {
         this.sensing_group_id = sensing_group_id;
     }
 
-    public void setSensors(ArrayList<Sensor> sensors) {
-        this.sensors = sensors;
+    public void setMeasurements(ArrayList<Sensor> measurements) {
+        this.measurements = measurements;
     }
 
     /*{

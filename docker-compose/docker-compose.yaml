@@ -121,10 +121,12 @@ services:
           - "8094:8094"
         depends_on:
           - influxdb
+        entrypoint: "telegraf"
         environment:
             - INFLUXDB_URL=http://influxdb:8086
         volumes:
           - ./telegraf:/var/lib/telegraf
+          - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
 
 
     chronograf:
@@ -143,3 +145,24 @@ services:
             - INFLUXDB_URL=http://influxdb:8086
         volumes:
           - ./chronograf:/var/lib/chronograf
+
+
+    kapacitor:
+        image: kapacitor
+        container_name: kapacitor
+        hostname: kapacitor
+        networks: 
+            - custom_network
+        expose:
+            - "9092"
+        ports:
+            - "900:9092"
+        depends_on:
+            - influxdb
+        environment:
+            #- INFLUXDB_URL=http://influxdb:8086
+            - KAPACITOR_LOGGING_LEVEL=INFO
+            - KAPACITOR_REPORTING_ENABLED=false
+            - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
+        volumes:
+          - ./kapacitor:/var/lib/kapacitor

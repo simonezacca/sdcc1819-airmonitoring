@@ -1,5 +1,6 @@
 package Producer;
 
+import Util.AirAgent;
 import Util.Data;
 import Util.MyJsonSerializer;
 import Util.Sensor;
@@ -86,7 +87,7 @@ public class ParserCSV {
             sensors.add(s);
             if(i==23){
                 Data d = new Data(formatDateTime, sensing_group_id);
-                d.setSensors(sensors);
+                d.setMeasurements(sensors);
                 dataToSend.add(d);
                 sensors = new ArrayList<>();
                 i = 0;
@@ -101,41 +102,41 @@ public class ParserCSV {
     private Sensor createSensor(long sensorID, String NO, String CO, String PM10, String BEN, String CH4, String EBE,
             String NMHC, String NO_2, String NOx, String O_3, String SO_2, String TCH){
         Sensor s = new Sensor(sensorID);
-        if(NO != null){
-            s.setNO(Double.parseDouble(NO));
+        if(NO != null && !NO.equals("")){
+            s.values.add(new AirAgent("NO", Double.parseDouble(NO)));
         }
-        if(CO != null){
-            s.setCO(Double.parseDouble(CO));
+        if(CO != null && !CO.equals("")){
+            s.values.add(new AirAgent("CO", Double.parseDouble(CO)));
         }
-        if(PM10 != null){
-            s.setPM10(Double.parseDouble(PM10));
+        if(PM10 != null && !PM10.equals("")){
+            s.values.add(new AirAgent("PM10", Double.parseDouble(PM10)));
         }
-        if(BEN != null){
-            s.setBEN(Double.parseDouble(BEN));
+        if(BEN != null && !BEN.equals("")){
+            s.values.add(new AirAgent("BEN", Double.parseDouble(BEN)));
         }
-        if(CH4 != null){
-            s.setCH4(Double.parseDouble(CH4));
+        if(CH4 != null && !CH4.equals("")){
+            s.values.add(new AirAgent("CH4", Double.parseDouble(CH4)));
         }
-        if(EBE != null){
-            s.setEBE(Double.parseDouble(EBE));
+        if(EBE != null && !EBE.equals("")){
+            s.values.add(new AirAgent("EBE", Double.parseDouble(EBE)));
         }
-        if(NMHC != null){
-            s.setNMHC(Double.parseDouble(NMHC));
+        if(NMHC != null && !NMHC.equals("")){
+            s.values.add(new AirAgent("NMHC", Double.parseDouble(NMHC)));
         }
-        if(NO_2 != null){
-            s.setNO_2(Double.parseDouble(NO_2));
+        if(NO_2 != null && !NO_2.equals("")){
+            s.values.add(new AirAgent("NO_2", Double.parseDouble(NO_2)));
         }
-        if(NOx != null){
-            s.setNOx(Double.parseDouble(NOx));
+        if(NOx != null && !NOx.equals("")){
+            s.values.add(new AirAgent("NOx", Double.parseDouble(NOx)));
         }
-        if(O_3 != null){
-            s.setO_3(Double.parseDouble(O_3));
+        if(O_3 != null && !O_3.equals("")){
+            s.values.add(new AirAgent("O_3", Double.parseDouble(O_3)));
         }
-        if(SO_2 != null){
-            s.setSO_2(Double.parseDouble(SO_2));
+        if(SO_2 != null && !SO_2.equals("")){
+            s.values.add(new AirAgent("SO_2", Double.parseDouble(SO_2)));
         }
-        if(TCH != null){
-            s.setTCH(Double.parseDouble(TCH));
+        if(TCH != null && !TCH.equals("")){
+            s.values.add(new AirAgent("TCH", Double.parseDouble(TCH)));
         }
         return s;
     }

@@ -1,26 +1,30 @@
 package Util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Sensor {
 
-    private long sensorID;
-    private double NO;
-    private double CO;
-    private double PM10;
-    private double BEN;
-    private double CH4;
-    private double EBE;
-    private double NMHC;
-    private double NO_2;
-    private double NOx;
-    private double O_3;
-    private double SO_2;
-    private double TCH;
+    private long sensorid;
+    /*private Double NO;
+    private Double CO;
+    private Double PM10;
+    private Double BEN;
+    private Double CH4;
+    private Double EBE;
+    private Double NMHC;
+    private Double NO_2;
+    private Double NOx;
+    private Double O_3;
+    private Double SO_2;
+    private Double TCH;*/
+    public List<AirAgent> values = new ArrayList<>();
 
 
-    public Sensor(long sensorID) {
-        this.sensorID = sensorID;
+    public Sensor(long sensorid) {
+        this.sensorid = sensorid;
     }
-
+/*
     @Override
     public String toString() {
         return "Sensor{" +
@@ -38,17 +42,17 @@ public class Sensor {
                 ", SO_2='" + SO_2 + '\'' +
                 ", TCH='" + TCH + '\'' +
                 '}';
+    }*/
+
+    public long getSensorid() {
+        return sensorid;
     }
 
-    public long getSensorID() {
-        return sensorID;
+    public void setSensorid(long sensorid) {
+        this.sensorid = sensorid;
     }
 
-    public void setSensorID(long sensorID) {
-        this.sensorID = sensorID;
-    }
-
-    public void setNO(double NO) {
+  /*  public void setNO(double NO) {
         this.NO = NO;
     }
 
@@ -94,5 +98,5 @@ public class Sensor {
 
     public void setTCH(double TCH) {
         this.TCH = TCH;
-    }
+    }*/
 }
