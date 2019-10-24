@@ -35,3 +35,5 @@ out
 # !docker-images/flink/external_jar_lib/*.jar
 
 dependency-reduced-pom.xml
+
+*.db

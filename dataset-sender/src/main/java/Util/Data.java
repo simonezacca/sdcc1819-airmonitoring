@@ -46,6 +46,14 @@ public class Data {
         this.measurements = measurements;
     }
 
+    public long getSensing_group_id() {
+        return sensing_group_id;
+    }
+
+    public ArrayList<Sensor> getMeasurements() {
+        return measurements;
+    }
+
     /*{
             "sensing_group_id":1,
                 "datetime":"2019-10-21 00:00:03",
