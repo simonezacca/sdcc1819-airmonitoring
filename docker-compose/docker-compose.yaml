@@ -84,3 +84,85 @@ services:
         volumes:
             - ./dataset-sender:/dataset-sender
             #- ../sdcc1819-airmonitoring:/dataset-consumer
+
+
+    influxdb:
+        image: influxdb
+        container_name: influxdb
+        hostname: influxdb
+        networks:
+          - custom_network
+        expose:
+          - "8083"
+          - "8086"
+        ports:
+          - "8086:8086"     #HTTP API port
+          - "8083:8083"     #administrator interface port
+        environment:
+            - INFLUX_DB=db0
+            - INFLUXDB_CONFIG_PATH=/etc/influxdb/influxdb.conf
+        volumes:
+            - ./influxdb:/var/lib/influxdb
+
+
+    telegraf:
+        image: telegraf
+        container_name: telegraf
+        hostname: telegraf
+        networks:
+          - custom_network
+        expose:
+          - "8125"
+          - "8092"
+          - "8094"
+        ports:
+          - "8125:8125"
+          - "8092:8092"
+          - "8094:8094"
+        depends_on:
+          - influxdb
+        entrypoint: "telegraf"
+        environment:
+            - INFLUXDB_URL=http://influxdb:8086
+        volumes:
+          - ./telegraf:/var/lib/telegraf
+          - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+
+
+    chronograf:
+        image: chronograf
+        container_name: chronograf
+        hostname: chronograf
+        networks:
+            - custom_network
+        expose:
+            - "8888"
+        ports:
+            - "8888:8888"
+        depends_on:
+            - influxdb
+        environment:
+            - INFLUXDB_URL=http://influxdb:8086
+        volumes:
+          - ./chronograf:/var/lib/chronograf
+
+
+    kapacitor:
+        image: kapacitor
+        container_name: kapacitor
+        hostname: kapacitor
+        networks: 
+            - custom_network
+        expose:
+            - "9092"
+        ports:
+            - "900:9092"
+        depends_on:
+            - influxdb
+        environment:
+            #- INFLUXDB_URL=http://influxdb:8086
+            - KAPACITOR_LOGGING_LEVEL=INFO
+            - KAPACITOR_REPORTING_ENABLED=false
+            - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
+        volumes:
+          - ./kapacitor:/var/lib/kapacitor

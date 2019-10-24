@@ -1,6 +1,7 @@
 package Producer;
 
 import Util.Data;
+import Util.MyJsonSerializer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import java.util.ArrayList;
@@ -36,10 +37,10 @@ public class Producer {
 
 
     private void sendToTopic(Data value) {
-        ProducerRecord record = new ProducerRecord(topicName, value.toString());
+        ProducerRecord record = new ProducerRecord(topicName, MyJsonSerializer.serialize(value));
         try {
             kafkaProducer.send(record);
-            System.out.println("Producer send: " + value.toString());
+            System.out.println("Producer send: " + MyJsonSerializer.serialize(value));
         }
         catch (Exception e){
             e.printStackTrace();

@@ -1,73 +1,77 @@
 package Util;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Data {
 
-    private LocalDateTime date;
-    private double NO;
-    private double CO;
-    private double CO2;
-    private double PM10;
+    private LocalDateTime datetime;
+    private long sensing_group_id;
+    private ArrayList<Sensor> measurements = null;
 
-    public Data(LocalDateTime date, double NO) {
-        this.date = date;
-        this.NO = NO;
-    }
-
-    public Data(LocalDateTime date, double NO, double CO, double CO2, double PM10) {
-        this.date = date;
-        this.NO = NO;
-        this.CO = CO;
-        this.CO2 = CO2;
-        this.PM10 = PM10;
+    public Data(LocalDateTime dateTime, long sensing_group_id) {
+        this.datetime = dateTime;
+        this.sensing_group_id = sensing_group_id;
     }
 
     @Override
     public String toString() {
         return "Data{" +
-                "date=" + date +
-                ", NO=" + NO +
+                "dateTime=" + datetime +
+                ", sensing_group_id=" + sensing_group_id +
+                ", measurements=" + measurements +
                 '}';
     }
 
-    public LocalDateTime getDate() {
-        return date;
+    public String toJson() {
+        return "{" +
+                "\"date\":\"" + datetime + "\"" +
+                ", \"NO\":" + "NO" +
+                '}';
     }
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
+    public LocalDateTime getDatetime() {
+        return datetime;
     }
 
-    public double getNO() {
-        return NO;
+    public void setDatetime(LocalDateTime datetime) {
+        this.datetime = datetime;
     }
 
-    public void setNO(double NO) {
-        this.NO = NO;
+    public void setSensing_group_id(long sensing_group_id) {
+        this.sensing_group_id = sensing_group_id;
     }
 
-    public double getCO() {
-        return CO;
+    public void setMeasurements(ArrayList<Sensor> measurements) {
+        this.measurements = measurements;
     }
 
-    public void setCO(double CO) {
-        this.CO = CO;
-    }
-
-    public double getCO2() {
-        return CO2;
-    }
-
-    public void setCO2(double CO2) {
-        this.CO2 = CO2;
-    }
-
-    public double getPM10() {
-        return PM10;
-    }
-
-    public void setPM10(double PM10) {
-        this.PM10 = PM10;
-    }
+    /*{
+            "sensing_group_id":1,
+                "datetime":"2019-10-21 00:00:03",
+                "measurements":[
+            {
+                "sensor_id":2,
+                    "values":[
+                {
+                    "BEN":0
+                },
+                {
+                    "CH42":0
+                }
+         ]
+            },
+            {
+                "sensor_id":4,
+                    "values":[
+                {
+                    "NO":0
+                },
+                {
+                    "O_3":0
+                }
+         ]
+            }
+   ]
+        }*/
 }
