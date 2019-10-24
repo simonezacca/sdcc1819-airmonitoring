@@ -1,9 +1,6 @@
 package Producer;
 
-import Util.AirAgent;
-import Util.Data;
-import Util.MyJsonSerializer;
-import Util.Sensor;
+import Util.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -145,7 +142,7 @@ public class ParserCSV {
         ParserCSV ps = new ParserCSV("/home/andrea/IdeaProjects/sdcc1819-airmonitoring/docker-compose/dataset-sender/madrid_2018_h1000.csv");
         ps.initParserCSV();
         for(Data d: ps.parseFile()){
-            System.out.println("\ndata: " + MyJsonSerializer.serialize(d));
+            System.out.println("\ndata: " + MyLineProtocolSerializer.serialize(d));
         }
     }
 
