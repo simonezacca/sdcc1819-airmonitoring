@@ -33,9 +33,6 @@ public class Utility {
         calendar.setTime(date);
         calendar.add(Calendar.MINUTE,timeToAdd);
         String formatted = format.format(calendar.getTime());
-        //System.out.println("O = " + originalData);
-        //System.out.println("F = " + formatted);
-
         return formatted;
     }
 
@@ -51,9 +48,4 @@ public class Utility {
         return array;
     }
 
-
-    public static void main(String[] args) {
-        Utility u = new Utility();
-        //String formatted = u.addTimeToTimestamp("2018-03-01 13:00:00");
-    }
 }
