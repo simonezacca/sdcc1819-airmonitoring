@@ -35,3 +35,8 @@ out
 # !docker-images/flink/external_jar_lib/*.jar
 
 dependency-reduced-pom.xml
+
+*.db
+docker-compose/influxdb/data/*
+docker-compose/influxdb/wal/*
+docker-compose/dataset-sender/expanded_madrid_2017.csv
