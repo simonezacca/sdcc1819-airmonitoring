@@ -19,7 +19,7 @@ public class CSVGenerator {
             File expandedCSV = new File(filePath);
             if(expandedCSV.createNewFile()){
                 BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath,true));
-                bufferedWriter.write("date,BEN,CH4,CO,EBE,NMHC,NO,NO_2,NO_x,O_3," +
+                bufferedWriter.write("date,BEN,CH4,CO,EBE,NMHC,NO,NO_2,NOx,O_3," +
                                           "PM10,PM25,SO_2,TCH,TOL,station");
                 bufferedWriter.flush();
             }

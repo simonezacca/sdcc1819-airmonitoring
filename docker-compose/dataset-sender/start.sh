@@ -1,4 +1,4 @@
 
-DATASET=expanded_madrid_2017.csv
-GENDER=$1
+DATASET=$2 #csvpath
+GENDER=$1 #p
 java -cp dataset-sender-1.0-SNAPSHOT.jar main $DATASET $GENDER

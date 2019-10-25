@@ -45,7 +45,6 @@ public class Producer {
             for(String line: lines){
                 record = new ProducerRecord(topicName, line);
                 kafkaProducer.send(record);
-                System.out.println("Producer send: " + line);
             }
         }
         catch (Exception e){
@@ -59,12 +58,11 @@ public class Producer {
         ArrayList<Data> records = parserCSV.parseFile();
         System.out.println("file parsato!!");
         for( Data d : records){
-
-            try {
+            /*try {
                 sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
             sendToTopic(d);
         }
     }
