@@ -1,8 +1,10 @@
 package sdcc1819.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class AirAgent {
 
     protected String name;

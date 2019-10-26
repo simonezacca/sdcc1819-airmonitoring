@@ -17,4 +17,22 @@ public class Sensor {
         this.sensorId = sensorId;
     }
 
+    public boolean containsAgent(String nameAgent){
+        for (AirAgent a: values) {
+            if(a.name.equals(nameAgent)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public AirAgent getAgentByName(String nameAgent){
+        for (AirAgent a: values) {
+            if(a.name.equals(nameAgent)){
+                return a;
+            }
+        }
+        return null;
+    }
+
 }

@@ -10,6 +10,14 @@
   <groupId>sdcc1819</groupId>
   <artifactId>flink-analyzer</artifactId>
   <version>1.0-SNAPSHOT</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <flink.version>1.8.0</flink.version>
+        <java.version>1.8</java.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
   <name>flink-analyzer</name>
   <url>http://maven.apache.org</url>
   <dependencies>
@@ -19,8 +27,51 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-  </dependencies>
 
+
+      <!-- Apache Flink dependencies -->
+      <!-- These dependencies are provided, because they should not be packaged into the JAR file. -->
+      <dependency>
+          <groupId>org.apache.flink</groupId>
+          <artifactId>flink-java</artifactId>
+          <version>${flink.version}</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.flink</groupId>
+          <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+          <version>${flink.version}</version>
+          <scope>provided</scope>
+      </dependency>
+
+
+      <!-- Add logging framework, to produce console output when running in the IDE. -->
+      <!-- These dependencies are excluded from the application JAR by default. -->
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+          <version>1.7.7</version>
+          <scope>runtime</scope>
+      </dependency>
+      <dependency>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+          <version>1.2.17</version>
+          <scope>runtime</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.flink</groupId>
+          <artifactId>flink-connector-kafka_2.11</artifactId>
+          <version>1.8.0</version>
+      </dependency>
+    
+      <dependency>
+          <groupId>sdcc1819</groupId>
+          <artifactId>model</artifactId>
+          <version>1.0-SNAPSHOT</version>
+          <scope>compile</scope>
+      </dependency>
+  </dependencies>
   <build>
     <plugins>
 
@@ -78,6 +129,13 @@
         <version>3.1.1</version>
         <configuration>
           <outputDirectory>target/jar</outputDirectory>
+            <!--<archive>
+                <manifest>
+                    <addClasspath>true</addClasspath>
+                    <mainClass>util.ReadFromKafka</mainClass>
+                </manifest>
+            </archive>-->
+
         </configuration>
       </plugin>
 
@@ -152,5 +210,4 @@
       </plugins>
     </pluginManagement>
   </build>
-
 </project>

@@ -104,6 +104,7 @@ services:
             - INFLUXDB_CONFIG_PATH=/etc/influxdb/influxdb.conf
         volumes:
             - ./influxdb:/var/lib/influxdb
+            - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
 
 
     telegraf:
@@ -168,3 +169,37 @@ services:
     #        - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
     #    volumes:
     #      - ./kapacitor:/var/lib/kapacitor
+
+    flink-jobmanager:
+        image: flink:1.8-scala_2.11
+        hostname: flink-jobmanager
+        container_name: flink-jobmanager
+        expose:
+            - "6123"
+        networks:
+            - custom_network
+        ports:
+            - "8081:8081"
+        command: jobmanager
+        environment:
+            - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+        volumes:
+            - ./flink-analyzer:/flink-analyzer
+            
+    flink-taskmanager:
+        image: flink:1.8-scala_2.11
+        hostname: flink-taskmanager
+        container_name: flink-taskmanager
+        networks:
+            - custom_network
+        expose:
+            - "6121"
+            - "6122"
+        depends_on:
+            - flink-jobmanager
+        command: taskmanager
+        environment:
+            - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+        volumes:
+            - ./flink-analyzer:/flink-analyzer
+            
