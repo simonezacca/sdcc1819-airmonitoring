@@ -15,11 +15,12 @@ public class Producer {
     private ParserCSV parserCSV;
     public static final String KAFKA_SERVER_URL = "kafka";
     public static final int KAFKA_SERVER_PORT = 9092;
-    private static final String topicName = "topicProva";
+    private String topicName;
     private KafkaProducer kafkaProducer;
 
 
-    public Producer(String aCsvFilePath, float aServingSpeed) {
+    public Producer(String topicName,String aCsvFilePath, float aServingSpeed) {
+        this.topicName = topicName;
         parserCSV = new ParserCSV(aCsvFilePath);
         init();
     }

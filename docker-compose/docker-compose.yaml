@@ -1,4 +1,4 @@
-version: "2"
+version: '2.4'
 
 networks: 
     custom_network:
@@ -33,7 +33,8 @@ services:
             - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
             - KAFKA_LOG_RETENTION_HOURS=1
             - KAFKA_MESSAGE_MAX_BYTES=2000000000
-            - KAFKA_CREATE_TOPICS=topicProva:1:1
+            #- KAFKA_CREATE_TOPICS="LINEPROTO:1:1,JSONPROTO:1:1"
+            - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
 
     kafka-producer:
         image: wurstmeister/kafka
@@ -60,30 +61,30 @@ services:
             - ./dataset-sender:/dataset-sender
             #- ../sdcc1819-airmonitoring:/dataset-producer
 
-    kafka-consumer:
-        image: wurstmeister/kafka
-        container_name: kafka-consumer
-        hostname: kafka-consumer
-        networks: 
-            - custom_network
-        expose:
-            - "5006" # remote intellij debug
-        ports:
-            - "5006:5006" # remote intellij debug
-        depends_on:
-            - zookeeper
-            - kafka
-        environment:
-            - KAFKA_ADVERTISED_HOST_NAME=kafka
-            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-            - KAFKA_LOG_RETENTION_HOURS=1
-            - KAFKA_MESSAGE_MAX_BYTES=2000000000
-        entrypoint: /bin/sh
-        stdin_open: true
-        tty: true
-        volumes:
-            - ./dataset-sender:/dataset-sender
-            #- ../sdcc1819-airmonitoring:/dataset-consumer
+    #kafka-consumer:
+    #    image: wurstmeister/kafka
+    #    container_name: kafka-consumer
+    #    hostname: kafka-consumer
+    #    networks: 
+    #        - custom_network
+    #    expose:
+    #        - "5006" # remote intellij debug
+    #    ports:
+    #        - "5006:5006" # remote intellij debug
+    #    depends_on:
+    #        - zookeeper
+    #        - kafka
+    #    environment:
+    #        - KAFKA_ADVERTISED_HOST_NAME=kafka
+    #        - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+    #        - KAFKA_LOG_RETENTION_HOURS=1
+    #        - KAFKA_MESSAGE_MAX_BYTES=2000000000
+    #    entrypoint: /bin/sh
+    #    stdin_open: true
+    #    tty: true
+    #    volumes:
+    #        - ./dataset-sender:/dataset-sender
+    #        #- ../sdcc1819-airmonitoring:/dataset-consumer
 
 
     influxdb:
@@ -148,22 +149,22 @@ services:
           - ./chronograf:/var/lib/chronograf
 
 
-    kapacitor:
-        image: kapacitor
-        container_name: kapacitor
-        hostname: kapacitor
-        networks: 
-            - custom_network
-        expose:
-            - "9092"
-        ports:
-            - "900:9092"
-        depends_on:
-            - influxdb
-        environment:
-            #- INFLUXDB_URL=http://influxdb:8086
-            - KAPACITOR_LOGGING_LEVEL=INFO
-            - KAPACITOR_REPORTING_ENABLED=false
-            - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
-        volumes:
-          - ./kapacitor:/var/lib/kapacitor
+    #kapacitor:
+    #    image: kapacitor
+    #    container_name: kapacitor
+    #    hostname: kapacitor
+    #    networks: 
+    #        - custom_network
+    #    expose:
+    #        - "9092"
+    #    ports:
+    #        - "900:9092"
+    #    depends_on:
+    #        - influxdb
+    #    environment:
+    #        #- INFLUXDB_URL=http://influxdb:8086
+    #        - KAPACITOR_LOGGING_LEVEL=INFO
+    #        - KAPACITOR_REPORTING_ENABLED=false
+    #        - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
+    #    volumes:
+    #      - ./kapacitor:/var/lib/kapacitor

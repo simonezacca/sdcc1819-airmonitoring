@@ -13,7 +13,7 @@ public class Consumer {
     private KafkaConsumer<String, String> consumer;
     public static final String KAFKA_SERVER_URL = "kafka";
     public static final int KAFKA_SERVER_PORT = 9092;
-    private static final String topicName = "topicProva";
+    private static final String topicName = "LINEPROTO";
 
     public Consumer() {
         init();
