@@ -1,4 +1,4 @@
-package Util;
+package sdcc1819.serializers.json;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;

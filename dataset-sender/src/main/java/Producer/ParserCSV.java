@@ -1,9 +1,12 @@
 package Producer;
 
-import Util.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import sdcc1819.model.AirAgent;
+import sdcc1819.model.Data;
+import sdcc1819.model.Sensor;
+import sdcc1819.serializers.lineprotocol.AirDataLineProtocolSerializer;
 
 import java.io.BufferedReader;
 import java.nio.file.Files;
@@ -59,8 +62,8 @@ public class ParserCSV {
         String SO_2;
         String TCH;
         Sensor s;
-        long sensing_group_id = 1;
-        long sensorID;
+        String sensingGroupId = "1";
+        String sensorID;
         ArrayList<Sensor> sensors = new ArrayList<>();
         for (CSVRecord csvRecord : csvParser) {
             // Accessing Values by Column Index
@@ -79,11 +82,11 @@ public class ParserCSV {
             PM10 = csvRecord.get("PM10");
             SO_2 = csvRecord.get("SO_2");
             TCH = csvRecord.get("TCH");
-            sensorID = Long.parseLong(csvRecord.get("station"));
+            sensorID = csvRecord.get("station");
             s = createSensor(sensorID, NO, CO, PM10, BEN, CH4, EBE, NMHC, NO_2, NOx, O_3, SO_2, TCH);
             sensors.add(s);
             if(i==23){
-                Data d = new Data(formatDateTime, sensing_group_id);
+                Data d = new Data(formatDateTime, sensingGroupId);
                 d.setMeasurements(sensors);
                 dataToSend.add(d);
                 sensors = new ArrayList<>();
@@ -96,7 +99,7 @@ public class ParserCSV {
         return dataToSend;
     }
 
-    private Sensor createSensor(long sensorID, String NO, String CO, String PM10, String BEN, String CH4, String EBE,
+    private Sensor createSensor(String sensorID, String NO, String CO, String PM10, String BEN, String CH4, String EBE,
             String NMHC, String NO_2, String NOx, String O_3, String SO_2, String TCH){
         Sensor s = new Sensor(sensorID);
         if(NO != null && !NO.equals("")){
@@ -139,10 +142,14 @@ public class ParserCSV {
     }
 
     public static void main(String[] args) {
-        ParserCSV ps = new ParserCSV("/home/andrea/IdeaProjects/sdcc1819-airmonitoring/docker-compose/dataset-sender/madrid_2018_h1000.csv");
+
+        String csvPath = args[0];
+        //csvPath = "";
+
+        ParserCSV ps = new ParserCSV(csvPath);
         ps.initParserCSV();
         for(Data d: ps.parseFile()){
-            System.out.println("\ndata: " + MyLineProtocolSerializer.serialize(d));
+            System.out.println("\ndata: " + AirDataLineProtocolSerializer.serialize(d));
         }
     }
 

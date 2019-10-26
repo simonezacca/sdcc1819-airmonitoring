@@ -11,5 +11,6 @@
     <module>dataset-sender</module>
     <module>flink-analyzer</module>
     <module>influxdb-analyzer</module>
+    <module>model</module>
   </modules>
 </project>

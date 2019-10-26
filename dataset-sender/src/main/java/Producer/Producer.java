@@ -1,15 +1,13 @@
 package Producer;
 
-import Util.Data;
-import Util.MyJsonSerializer;
-import Util.MyLineProtocolSerializer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import sdcc1819.model.Data;
+import sdcc1819.serializers.lineprotocol.AirDataLineProtocolSerializer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import static java.lang.Thread.sleep;
 
 
 public class Producer {
@@ -26,8 +24,6 @@ public class Producer {
         init();
     }
 
-
-
     private void init() {
         Properties properties = new Properties();
         properties.put("bootstrap.servers", KAFKA_SERVER_URL + ":" + KAFKA_SERVER_PORT);
@@ -39,7 +35,7 @@ public class Producer {
 
 
     private void sendToTopic(Data value) {
-        List<String> lines = MyLineProtocolSerializer.serialize(value);
+        List<String> lines = AirDataLineProtocolSerializer.serialize(value);
         ProducerRecord record;
         try {
             for(String line: lines){

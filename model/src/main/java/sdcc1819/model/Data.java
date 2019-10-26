@@ -1,24 +1,28 @@
-package Util;
+package sdcc1819.model;
 
+import com.google.gson.annotations.SerializedName;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+@lombok.Data
 public class Data {
 
     private LocalDateTime datetime;
-    private long sensing_group_id;
+
+    @SerializedName("sensing_group_id")
+    private String sensingGroupId;
     private ArrayList<Sensor> measurements = null;
 
-    public Data(LocalDateTime dateTime, long sensing_group_id) {
+    public Data(LocalDateTime dateTime, String sensingGroupId) {
         this.datetime = dateTime;
-        this.sensing_group_id = sensing_group_id;
+        this.sensingGroupId = sensingGroupId;
     }
 
     @Override
     public String toString() {
         return "Data{" +
                 "dateTime=" + datetime +
-                ", sensing_group_id=" + sensing_group_id +
+                ", sensing_group_id=" + sensingGroupId +
                 ", measurements=" + measurements +
                 '}';
     }
@@ -28,30 +32,6 @@ public class Data {
                 "\"date\":\"" + datetime + "\"" +
                 ", \"NO\":" + "NO" +
                 '}';
-    }
-
-    public LocalDateTime getDatetime() {
-        return datetime;
-    }
-
-    public void setDatetime(LocalDateTime datetime) {
-        this.datetime = datetime;
-    }
-
-    public void setSensing_group_id(long sensing_group_id) {
-        this.sensing_group_id = sensing_group_id;
-    }
-
-    public void setMeasurements(ArrayList<Sensor> measurements) {
-        this.measurements = measurements;
-    }
-
-    public long getSensing_group_id() {
-        return sensing_group_id;
-    }
-
-    public ArrayList<Sensor> getMeasurements() {
-        return measurements;
     }
 
     /*{
