@@ -26,9 +26,6 @@ target
 out
 *.iml
 
-# docker-compose/dataset/Comments_jan-apr2018.csv
-# docker-compose/flink_jar/SABD-project2-application-1.0-SNAPSHOT.jar
-
 .project
 .settings
 
@@ -39,4 +36,4 @@ dependency-reduced-pom.xml
 *.db
 docker-compose/influxdb/data/*
 docker-compose/influxdb/wal/*
-docker-compose/dataset-sender/expanded_madrid_2017.csv
+docker-compose/dataset-sender/*.csv

@@ -8,6 +8,7 @@ import sdcc1819.serializers.json.types.ListAirAgentSerializer;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AirDataJsonSerializer {
@@ -20,8 +21,10 @@ public class AirDataJsonSerializer {
             .registerTypeAdapter(airAgentListType, airagentserializer)
             .create();
 
-    public static String serialize(Data data){
-        return gson.toJson(data);
+    public static List<String> serialize(Data data){
+        List<String> result = new ArrayList<>();
+        result.add(gson.toJson(data));
+        return result;
     }
 
     public static Data deserialize(String rawJson) {

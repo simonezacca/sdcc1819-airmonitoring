@@ -1,4 +1,4 @@
-package Producer;
+package producer;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;

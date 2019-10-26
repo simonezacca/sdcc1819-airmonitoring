@@ -3,6 +3,7 @@ package sdcc1819.model;
 import com.google.gson.annotations.SerializedName;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @lombok.Data
 public class Data {
@@ -11,7 +12,7 @@ public class Data {
 
     @SerializedName("sensing_group_id")
     private String sensingGroupId;
-    private ArrayList<Sensor> measurements = null;
+    private List<Sensor> measurements = null;
 
     public Data(LocalDateTime dateTime, String sensingGroupId) {
         this.datetime = dateTime;

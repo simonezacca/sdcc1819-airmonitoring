@@ -1,8 +1,9 @@
-package Producer;
+package producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import sdcc1819.model.Data;
+import sdcc1819.serializers.json.AirDataJsonSerializer;
 import sdcc1819.serializers.lineprotocol.AirDataLineProtocolSerializer;
 
 import java.util.ArrayList;
@@ -36,7 +37,12 @@ public class Producer {
 
 
     private void sendToTopic(Data value) {
-        List<String> lines = AirDataLineProtocolSerializer.serialize(value);
+        List<String> lines = null;
+        if (topicName.equals("LINEPROTO"))
+            lines = AirDataLineProtocolSerializer.serialize(value);
+        if (topicName.equals("JSONPROTO"))
+            lines = AirDataJsonSerializer.serialize(value);
+
         ProducerRecord record;
         try {
             for(String line: lines){
@@ -52,8 +58,8 @@ public class Producer {
 
     public void produceRecords() {
 
-        ArrayList<Data> records = parserCSV.parseFile();
-        System.out.println("file parsato!!");
+        List<Data> records = parserCSV.parseFile();
+        System.out.println("File parsato!!");
         for( Data d : records){
             /*try {
                 sleep(2000);
