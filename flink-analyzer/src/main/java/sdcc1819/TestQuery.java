@@ -1,13 +1,9 @@
 package sdcc1819;
 
-import operators.aggregate.Average;
 import operators.filter.DiscardEmptyValues;
-import operators.flatmap.SensorExtractor;
-import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -15,14 +11,12 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import scala.Tuple1;
-import scala.Tuple2;
 import sdcc1819.model.Data;
 import sdcc1819.model.Sensor;
 import sdcc1819.serializers.json.AirDataJsonSerializer;
 import time.DateTimeAscendingAssigner;
 import util.SDCCExecutionEnvironment;
 
-import java.nio.file.FileSystem;
 import java.util.Properties;
 
 public class TestQuery {
@@ -48,7 +42,7 @@ public class TestQuery {
                 //Deserializzo JSON
                 .map(s -> AirDataJsonSerializer.deserialize(s)).returns(Data.class)
                 //Scarto i sensori che hanno misurazioni vuote
-                //.filter(new DiscardEmptyValues())
+                .filter(new DiscardEmptyValues())
                 //Assegno Timestamp e Watermark
                 .assignTimestampsAndWatermarks(new DateTimeAscendingAssigner())
                 // Entra un Data ed escono N Sensor (FlatMap)
@@ -71,9 +65,10 @@ public class TestQuery {
                     }
                 })
                 .timeWindowAll(Time.days(1))
-                .aggregate(new Average())
+                //.aggregate(new ChemicalCompoundMean())
 
-                .writeAsText("/flink-analyzer/out.txt", org.apache.flink.core.fs.FileSystem.WriteMode.OVERWRITE);
+                //.writeAsText("/flink-analyzer/out.txt", org.apache.flink.core.fs.FileSystem.WriteMode.OVERWRITE);
+        ;
 
 
 

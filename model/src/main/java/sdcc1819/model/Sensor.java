@@ -10,7 +10,7 @@ import java.util.List;
 public class Sensor {
 
     @SerializedName("sensorid")
-    private String sensorId;
+    public String sensorId;
     public List<AirAgent> values = new ArrayList();
 
     public Sensor(String sensorId) {

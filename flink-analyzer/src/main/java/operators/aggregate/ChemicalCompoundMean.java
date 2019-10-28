@@ -3,11 +3,17 @@ package operators.aggregate;
 import org.apache.flink.api.common.functions.AggregateFunction;
 import scala.Tuple1;
 import scala.Tuple2;
+import sdcc1819.model.Sensor;
 
 
 // implementation of an aggregation function for an 'average'
-public class Average implements AggregateFunction<Tuple1<Double>, AverageAccumulator, Double> {
+public class ChemicalCompoundMean implements AggregateFunction<Sensor, AverageAccumulator, Double> {
 
+    private String agentName;
+
+    public ChemicalCompoundMean(String aname) {
+        this.agentName = aname;
+    }
 
     @Override
     public AverageAccumulator createAccumulator() {
@@ -15,8 +21,8 @@ public class Average implements AggregateFunction<Tuple1<Double>, AverageAccumul
     }
 
     @Override
-    public AverageAccumulator add(Tuple1<Double> t, AverageAccumulator a) {
-        a.sum += t._1();
+    public AverageAccumulator add(Sensor s, AverageAccumulator a) {
+        a.sum += s.getAgentByName(this.agentName).getValue();
         a.count++;
         return a;
     }
