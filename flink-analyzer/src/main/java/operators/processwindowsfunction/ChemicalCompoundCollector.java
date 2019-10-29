@@ -13,13 +13,14 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Str
 
 
     @Override
-public void process(String s, Context context, Iterable<Double> elements, Collector<String> out) throws Exception {
+public void process(String s, Context context, Iterable<Double> elements, Collector<String> out) {
         StringBuilder sb = new StringBuilder();
         String date = TimeStampConverter.fromEpochToDate(context.window().getStart());
         sb.append(date + " ");
         sb.append("sensorId: "+s+"\t");
         for (Double d: elements) {
             sb.append(d);
+            // TODO add threshold limit
         }
         out.collect(sb.toString());
         }

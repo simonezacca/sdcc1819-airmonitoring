@@ -19,8 +19,6 @@ public class LocalDateTimeDeserializer implements JsonDeserializer<LocalDateTime
     @Override
     public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         String dateAsString = json.getAsJsonPrimitive().getAsString();
-
-
         return  LocalDateTime.parse(dateAsString,formatter);
     }
 }

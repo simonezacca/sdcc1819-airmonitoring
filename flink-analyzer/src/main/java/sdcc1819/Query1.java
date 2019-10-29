@@ -1,12 +1,16 @@
 package sdcc1819;
 
+import map.FluxesMap;
+import map.LimitValueMap;
 import operators.aggregate.ChemicalCompoundMean;
 import operators.filter.DiscardEmptyValues;
 import operators.flatmap.SensorExtractor;
 import operators.key.KeyBySensorID;
 import operators.processwindowsfunction.ChemicalCompoundCollector;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
@@ -14,14 +18,19 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
+import scala.Tuple2;
 import sdcc1819.model.Data;
+import sdcc1819.model.Sensor;
 import sdcc1819.serializers.json.AirDataJsonSerializer;
 import time.DateTimeAscendingAssigner;
 import util.SDCCExecutionEnvironment;
+import util.SplitStreamByChemicalCompound;
+import util.StringToTimeUnit;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 public class Query1 {
@@ -46,27 +55,28 @@ public class Query1 {
         //Sliding Window
         SlidingEventTimeWindows windowSpec = SlidingEventTimeWindows.of(Time.hours(1), Time.minutes(5));
 
-        stream
+        LimitValueMap limitValueMap = new LimitValueMap();
+
+        KeyedStream<Sensor, String> originalStream = stream
                 //Deserializzo JSON
                 .map(s -> AirDataJsonSerializer.deserialize(s)).returns(Data.class)
                 .assignTimestampsAndWatermarks(new DateTimeAscendingAssigner())
                 .filter(new DiscardEmptyValues())
                 .flatMap(new SensorExtractor())
-                .filter(s -> s.containsAgent("NO_2"))
-                .keyBy(new KeyBySensorID())
-                .timeWindow(Time.hours(3),Time.hours(1))
-                .aggregate(new ChemicalCompoundMean("NO_2"), new ChemicalCompoundCollector())
-                .writeAsText("/flink-analyzer/outputQuery1.txt", org.apache.flink.core.fs.FileSystem.WriteMode.OVERWRITE);
+                //.filter(s -> s.containsAgent("NO_2"))
+                .keyBy(new KeyBySensorID());
 
+        FluxesMap fluxesMap = SplitStreamByChemicalCompound.split(originalStream);
+        fluxesMap.forEach((compoundString,compoundStream)->{
+            Tuple2<Double, String> limitTupleForCompound = limitValueMap.getLimitValue(compoundString);
+            Time aggregationTime = StringToTimeUnit.stringToFlinkTimeUnit(limitTupleForCompound._2);
+            compoundStream
+                    .keyBy(new KeyBySensorID())
+                    .timeWindow(aggregationTime,Time.hours(1))
+                    .aggregate(new ChemicalCompoundMean(compoundString), new ChemicalCompoundCollector())
+                    .writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE);
 
-
-
-
-
-
-
-
-
+        });
 
         try {
             env.execute();

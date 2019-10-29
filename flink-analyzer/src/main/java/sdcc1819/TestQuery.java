@@ -48,7 +48,7 @@ public class TestQuery {
                 // Entra un Data ed escono N Sensor (FlatMap)
                 .flatMap(new FlatMapFunction<Data, Sensor>() {
                     @Override
-                    public void flatMap(Data value, Collector<Sensor> out) throws Exception {
+                    public void flatMap(Data value, Collector<Sensor> out) {
                         for (Sensor s : value.getMeasurements()) {
                             out.collect(s);
                         }
@@ -60,7 +60,7 @@ public class TestQuery {
                 //.map(s -> new Tuple1<>(s.getAgentByName("PM10").getValue()))
                 .map(new MapFunction<Sensor, Tuple1<Double>>() {
                     @Override
-                    public Tuple1<Double> map(Sensor value) throws Exception {
+                    public Tuple1<Double> map(Sensor value) {
                         return new Tuple1<>(value.getAgentByName("PM10").getValue());
                     }
                 })

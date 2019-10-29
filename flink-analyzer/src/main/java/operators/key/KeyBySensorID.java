@@ -6,7 +6,7 @@ import sdcc1819.model.Sensor;
 public class KeyBySensorID implements KeySelector<Sensor, String> {
 
     @Override
-    public String getKey(Sensor s) throws Exception {
+    public String getKey(Sensor s) {
         return s.getSensorId();
     }
 }

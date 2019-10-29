@@ -10,7 +10,7 @@ public class DiscardEmptyValues implements FilterFunction<Data>{
 
 
     @Override
-    public boolean filter(Data value) throws Exception {
+    public boolean filter(Data value) {
     // Se Array measurements è vuoto, scarta
         if(value.getMeasurements().isEmpty()){
             return false;
@@ -26,9 +26,6 @@ public class DiscardEmptyValues implements FilterFunction<Data>{
         }
 
     // Se measurements ora è vuoto, scartalo
-        if(value.getMeasurements().isEmpty()){
-            return false;
-        }
-        return true;
+        return !value.getMeasurements().isEmpty();
     }
 }

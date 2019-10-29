@@ -8,7 +8,7 @@ import sdcc1819.model.Sensor;
 public class SensorExtractor implements FlatMapFunction<Data, Sensor> {
 
     @Override
-    public void flatMap(Data value, Collector<Sensor> out) throws Exception {
+    public void flatMap(Data value, Collector<Sensor> out) {
         for (Sensor s: value.getMeasurements()) {
             out.collect(s);
         }

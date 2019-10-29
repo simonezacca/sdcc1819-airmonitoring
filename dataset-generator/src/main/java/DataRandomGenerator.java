@@ -141,7 +141,7 @@ public class DataRandomGenerator {
         int numSample = GeneratorConfiguration.TIME / GeneratorConfiguration.TIMETOSIMULATE;
         ArrayList<Double> generateFactors = new ArrayList<>();
         if(!factor1.equals("") && !factor2.equals(""))
-            generateFactors = utility.interpolate(utility.toDouble(factor1),utility.toDouble(factor2),numSample);
+            generateFactors = Utility.interpolate(utility.toDouble(factor1),utility.toDouble(factor2),numSample);
         return generateFactors;
     }
 
