@@ -15,7 +15,6 @@ public class DiscardEmptyValues implements FilterFunction<Data>{
         if(value.getMeasurements().isEmpty()){
             return false;
         }
-
     // Se non è vuoto, ciclo su tutti i sensori e per ogni sensore devo controllare che values sia non vuoto, se è vuoto lo scarto
         Iterator<Sensor> iter = (value.getMeasurements()).iterator();
         while (iter.hasNext()) {
@@ -24,7 +23,6 @@ public class DiscardEmptyValues implements FilterFunction<Data>{
                 iter.remove();
             }
         }
-
     // Se measurements ora è vuoto, scartalo
         return !value.getMeasurements().isEmpty();
     }

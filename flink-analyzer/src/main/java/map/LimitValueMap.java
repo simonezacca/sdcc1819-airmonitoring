@@ -14,9 +14,9 @@ public class LimitValueMap extends HashMap{
 
     public LimitValueMap() {
         lvm = new HashMap<>();
-        lvm.put("PM10", new Tuple2<>(50D,"d35"));
-        lvm.put("NO_2", new Tuple2<>(200D,"h18"));
-        lvm.put("SO_2", new Tuple2<>(350D,"d1"));
+        lvm.put("PM10", new Tuple2<>(50D,"d1"));
+        lvm.put("NO_2", new Tuple2<>(200D,"h1"));
+        lvm.put("SO_2", new Tuple2<>(350D,"h1"));
         lvm.put("CO", new Tuple2<>(10D,"h8"));
     }
 

@@ -36,27 +36,33 @@ import java.util.Properties;
 public class Query1 {
     public static void main(String[] args) {
 
-        // Setup Environment
+        // Inizializzo variabile d'ambiente
         StreamExecutionEnvironment env = SDCCExecutionEnvironment.getExecutionEnvironment();
 
-        // Properties for attach to Kafka
+        // Proprietà per attaccarsi al KafkaConsumer
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", "kafka:9092");
         properties.setProperty("zookeeper.connect", "zookeper:2181");
         properties.setProperty("group.id", "test");
         //properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
 
-        // Initialize KafkaConsumer (for Flink)
+        // Istanza della classe Kafka Consumer (per Flink)
         FlinkKafkaConsumer consumer = new FlinkKafkaConsumer<String>("JSONPROTO", new SimpleStringSchema(), properties);
 
-        // Creo sorgente attaccandoci il KafkaConsumer
+        // Creo un flusso attaccandoci il KafkaConsumer
         DataStreamSource<String> stream = env.addSource(consumer);
 
-        //Sliding Window
-        SlidingEventTimeWindows windowSpec = SlidingEventTimeWindows.of(Time.hours(1), Time.minutes(5));
-
+        // Istanzio una Map contenente <Nome del composto chimico, <valore limite, periodo medio di misurazione>>
         LimitValueMap limitValueMap = new LimitValueMap();
 
+        /*
+        * Con la Map trasformo il mio flusso di stringhe in oggetti di tipo Data
+        * Assegno Timestamp e Watermark in maniera ascendente
+        * Filtro gli oggetti Data del mio flusso in entrata scartando tutti quelli che hanno misurazioni vuote
+        * Estraggo dall'oggetto Data tutti i Sensori non vuoti rimasti
+        * Con KeyBy divido lo stream per chiave (dove la nostra chiave è il SensorID) in partizioni disgiunte
+        * Tutti i record con lo stesso sensorID sono assegnati alla stessa partizione
+        * */
         KeyedStream<Sensor, String> originalStream = stream
                 //Deserializzo JSON
                 .map(s -> AirDataJsonSerializer.deserialize(s)).returns(Data.class)
@@ -66,12 +72,20 @@ public class Query1 {
                 //.filter(s -> s.containsAgent("NO_2"))
                 .keyBy(new KeyBySensorID());
 
+        /* Divido i flussi per composto chimico e li inserisco all'interno di una Map
+        *  Per ogni nuovo flusso prendo (grazie alla LimitValueMap già popolata con i rispettivi dati):
+        *  - Il valore limite del composto
+        *  - Il tempo di aggregazione del composto
+        *  Abbiamo un flusso per ogni composto, con il proprio tempo d'aggregazione
+        *  Il traffico in entrata viene processato ed infine scritto su txt
+        * */
         FluxesMap fluxesMap = SplitStreamByChemicalCompound.split(originalStream);
         fluxesMap.forEach((compoundString,compoundStream)->{
             Tuple2<Double, String> limitTupleForCompound = limitValueMap.getLimitValue(compoundString);
             Time aggregationTime = StringToTimeUnit.stringToFlinkTimeUnit(limitTupleForCompound._2);
             compoundStream
                     .keyBy(new KeyBySensorID())
+                    // TODO cambiare sliding Window a 15minuti?
                     .timeWindow(aggregationTime,Time.hours(1))
                     .aggregate(new ChemicalCompoundMean(compoundString), new ChemicalCompoundCollector())
                     .writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE);
