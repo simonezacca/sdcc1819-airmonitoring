@@ -19,6 +19,7 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
 import scala.Tuple2;
+import scala.Tuple3;
 import sdcc1819.model.Data;
 import sdcc1819.model.Sensor;
 import sdcc1819.serializers.json.AirDataJsonSerializer;
@@ -81,15 +82,14 @@ public class Query1 {
         * */
         FluxesMap fluxesMap = SplitStreamByChemicalCompound.split(originalStream);
         fluxesMap.forEach((compoundString,compoundStream)->{
-            Tuple2<Double, String> limitTupleForCompound = limitValueMap.getLimitValue(compoundString);
-            Time aggregationTime = StringToTimeUnit.stringToFlinkTimeUnit(limitTupleForCompound._2);
+            Tuple3<Double, String, String> limitTupleForCompound = limitValueMap.getLimitValue(compoundString);
+            Time averagingPeriod = StringToTimeUnit.stringToFlinkTimeUnit(limitTupleForCompound._2());
             compoundStream
                     .keyBy(new KeyBySensorID())
                     // TODO cambiare sliding Window a 15minuti?
-                    .timeWindow(aggregationTime,Time.hours(1))
-                    .aggregate(new ChemicalCompoundMean(compoundString), new ChemicalCompoundCollector())
+                    .timeWindow(averagingPeriod,Time.hours(1))
+                    .aggregate(new ChemicalCompoundMean(compoundString), new ChemicalCompoundCollector(compoundString))
                     .writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE);
-
         });
 
         try {
