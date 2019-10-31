@@ -65,10 +65,15 @@ public class ParserCSV {
         String sensingGroupId = "1";
         String sensorID;
         ArrayList<Sensor> sensors = new ArrayList<>();
+        String previousDate = null;
         for (CSVRecord csvRecord : csvParser) {
             // Accessing Values by Column Index
             String DATE = csvRecord.get("date");
             DATE = DATE.substring(0, 10) + 'T' + DATE.substring(11);
+            if(previousDate==null){
+                previousDate = DATE;
+
+            }
             LocalDateTime formatDateTime = LocalDateTime.parse(DATE, formatter);
             BEN = csvRecord.get("BEN");
             CH4 = csvRecord.get("CH4");
@@ -85,14 +90,14 @@ public class ParserCSV {
             sensorID = csvRecord.get("station");
             s = createSensor(sensorID, NO, CO, PM10, BEN, CH4, EBE, NMHC, NO_2, NOx, O_3, SO_2, TCH);
             sensors.add(s);
-            if(i==23){
+            if(!previousDate.equals(DATE)){
                 Data d = new Data(formatDateTime, sensingGroupId);
                 d.setMeasurements(sensors);
                 dataToSend.add(d);
                 sensors = new ArrayList<>();
-                i = 0;
+                previousDate = null;
             }else{
-                i++;
+                previousDate = DATE;
             }
         }
         System.out.println("parsing finito!");
@@ -143,8 +148,7 @@ public class ParserCSV {
 
     public static void main(String[] args) {
 
-        String csvPath = args[0];
-        //csvPath = "";
+        String csvPath = "docker-compose/dataset-sender/madrid_2017_ordered.csv";
 
         ParserCSV ps = new ParserCSV(csvPath);
         ps.initParserCSV();

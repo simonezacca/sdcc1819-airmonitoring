@@ -87,9 +87,11 @@ public class Query1 {
             compoundStream
                     .keyBy(new KeyBySensorID())
                     // TODO cambiare sliding Window a 15minuti?
-                    .timeWindow(averagingPeriod,Time.hours(1))
+                    //.timeWindow(averagingPeriod,Time.hours(1))
+                    .timeWindow(averagingPeriod)
                     .aggregate(new ChemicalCompoundMean(compoundString), new ChemicalCompoundCollector(compoundString))
-                    .writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE);
+                    .writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE)
+                    .setParallelism(1);
         });
 
         try {

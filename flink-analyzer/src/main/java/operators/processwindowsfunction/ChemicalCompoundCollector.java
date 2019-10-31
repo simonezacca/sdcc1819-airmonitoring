@@ -36,6 +36,7 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Str
         for (Double d: elements) {
             sb.append(d+"\t");
             if(d.longValue() >= this.limitValue){
+                // TODO Bisogna gestire hit multiple
                 this.counterMap.hit(s);
             }
         }

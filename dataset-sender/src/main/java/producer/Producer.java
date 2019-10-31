@@ -61,11 +61,11 @@ public class Producer {
         List<Data> records = parserCSV.parseFile();
         System.out.println("File parsato!!");
         for( Data d : records){
-            /*try {
-                sleep(2000);
+            try {
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }*/
+            }
             sendToTopic(d);
         }
     }
