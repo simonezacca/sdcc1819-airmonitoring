@@ -7,23 +7,17 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import util.TimeStampConverter;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, String, String, TimeWindow>{
+public class ChemicalCompoundCollector2 extends ProcessWindowFunction<Double, String, String, TimeWindow>{
 
     LimitValueMap limitValueMap = new LimitValueMap();
     Double limitValue;
     String compoundName;
-    CounterMap counterMap;
+    Integer alarm;
 
-    public ChemicalCompoundCollector(String compoundName) {
+    public ChemicalCompoundCollector2(String compoundName) {
         this.compoundName= compoundName;
         this.limitValue = this.limitValueMap.getLimitValue(this.compoundName)._1();
-        this.counterMap = new CounterMap();
+        this.alarm = 0;
     }
 
     @Override
@@ -36,12 +30,13 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Str
         for (Double d: elements) {
             sb.append(d+"\t");
             if(d.longValue() >= this.limitValue){
-                this.counterMap.hit(s);
+                //TODO come gestire sliding window di 15 minuti?
+                // Se il valore oltrepassa la soglia genero l'allarme
+                this.alarm +=1;
+                sb.append(this.alarm);
             }
         }
-        if (counterMap.containsKey(s)) {
-            sb.append("Limit Value Counter: " + this.counterMap.get(s));
-        }
+
         out.collect(sb.toString());
         }
 }
