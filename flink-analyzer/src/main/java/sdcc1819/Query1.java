@@ -1,5 +1,11 @@
 package sdcc1819;
 
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.amazonaws.services.sqs.model.CreateQueueResult;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.google.gson.JsonObject;
 import map.FluxesMap;
 import map.LimitValueMap;
 import operators.aggregate.ChemicalCompoundMean;
@@ -20,6 +26,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
 import scala.Tuple2;
 import scala.Tuple3;
+import scala.util.parsing.json.JSON;
 import sdcc1819.model.Data;
 import sdcc1819.model.Sensor;
 import sdcc1819.serializers.json.AirDataJsonSerializer;
@@ -35,6 +42,28 @@ import java.util.Map;
 import java.util.Properties;
 
 public class Query1 {
+
+    private static final String QUEUE_NAME = "air-monitoring" + new Date().getTime();
+    private static final AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+    private static String queueUrl;
+
+    public Query1() {
+        init();
+    }
+
+    private void init(){
+        try {
+            CreateQueueResult create_result = sqs.createQueue(QUEUE_NAME);
+        } catch (AmazonSQSException e) {
+            if (!e.getErrorCode().equals("QueueAlreadyExists")) {
+                throw e;
+            }
+        }
+        finally {
+            queueUrl = sqs.getQueueUrl(QUEUE_NAME).getQueueUrl();
+        }
+    }
+
     public static void main(String[] args) {
 
         // Inizializzo variabile d'ambiente
@@ -66,7 +95,7 @@ public class Query1 {
         * */
         KeyedStream<Sensor, String> originalStream = stream
                 //Deserializzo JSON
-                .map(s -> AirDataJsonSerializer.deserialize(s)).returns(Data.class)
+                .map(AirDataJsonSerializer::deserialize).returns(Data.class)
                 .assignTimestampsAndWatermarks(new DateTimeAscendingAssigner())
                 .filter(new DiscardEmptyValues())
                 .flatMap(new SensorExtractor())
@@ -90,9 +119,11 @@ public class Query1 {
                     //.timeWindow(averagingPeriod,Time.hours(1))
                     .timeWindow(averagingPeriod)
                     .aggregate(new ChemicalCompoundMean(compoundString), new ChemicalCompoundCollector(compoundString))
-                    .writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE)
-                    .setParallelism(1);
+                    .map(Query1::sendMessagesSQS);
+                    //.writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE)
+                    //.setParallelism(1);
         });
+
 
         try {
             env.execute();
@@ -100,4 +131,27 @@ public class Query1 {
             e.printStackTrace();
         }
     }
+
+    private static JsonObject sendMessagesSQS(JsonObject jsonObject){
+
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(queueUrl)
+                .withMessageBody(String.valueOf(jsonObject))
+                .withDelaySeconds(5);
+        sqs.sendMessage(send_msg_request);
+
+
+        // Send multiple messages to the queue
+        /*SendMessageBatchRequest send_batch_request = new SendMessageBatchRequest()
+                .withQueueUrl(queueUrl)
+                .withEntries(
+                        new SendMessageBatchRequestEntry(
+                                "msg_1", "Hello from message 1"),
+                        new SendMessageBatchRequestEntry(
+                                "msg_2", "Hello from message 2")
+                                .withDelaySeconds(10));
+        sqs.sendMessageBatch(send_batch_request);*/
+        return jsonObject;
+    }
+
 }

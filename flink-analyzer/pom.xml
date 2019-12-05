@@ -19,7 +19,25 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
   <name>flink-analyzer</name>
+
   <url>http://maven.apache.org</url>
+
+  <!-- AWS java sdk bom che serve a importare tutti i moduli utilizzati da tutti i servizi di
+       amazon, in modo da scaricare le ultime versioni e renderle compatibili tra loro.
+       Va messo sempre, e poi nella sezione dependencies vanno messe tutte le dipendenze dei vari
+       servizi. -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-bom</artifactId>
+        <version>1.11.327</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -28,6 +46,11 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Amazon SQS dependecies -->
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-sqs</artifactId>
+    </dependency>
 
       <!-- Apache Flink dependencies -->
       <!-- These dependencies are provided, because they should not be packaged into the JAR file. -->

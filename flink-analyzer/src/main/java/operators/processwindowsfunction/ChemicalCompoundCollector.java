@@ -1,5 +1,6 @@
 package operators.processwindowsfunction;
 
+import com.google.gson.JsonObject;
 import map.CounterMap;
 import map.LimitValueMap;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
@@ -13,7 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, String, String, TimeWindow>{
+public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, JsonObject, String, TimeWindow>{
 
     LimitValueMap limitValueMap = new LimitValueMap();
     Double limitValue;
@@ -27,8 +28,9 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Str
     }
 
     @Override
-    public void process(String s, Context context, Iterable<Double> elements, Collector<String> out) {
+    public void process(String s, Context context, Iterable<Double> elements, Collector<JsonObject> out) {
         StringBuilder sb = new StringBuilder();
+        Double average = 0.0;
         String date = TimeStampConverter.fromEpochToDate(context.window().getStart());
         sb.append(date + " ");
         sb.append("sensorId: "+s+"\t");
@@ -38,10 +40,22 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Str
             if(d.longValue() >= this.limitValue){
                 this.counterMap.hit(s);
             }
+            average = new Double(d);
         }
         if (counterMap.containsKey(s)) {
             sb.append("Limit Value Counter: " + this.counterMap.get(s));
         }
-        out.collect(sb.toString());
+        //out.collect(sb.toString());
+        out.collect(writeToJson(compoundName, average, s, context.window().getStart()));
         }
+
+    private JsonObject writeToJson(String chemicalCompound, double value, String sensor_id, long timestamp){
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("chemical_compound", chemicalCompound);
+        jsonObject.addProperty("value", value);
+        jsonObject.addProperty("sensor_id", sensor_id);
+        jsonObject.addProperty("timestamp", timestamp);
+        return jsonObject;
+    }
+
 }
