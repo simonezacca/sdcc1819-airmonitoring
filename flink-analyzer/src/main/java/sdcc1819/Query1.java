@@ -132,7 +132,7 @@ public class Query1 implements Serializable {
                     //.timeWindow(averagingPeriod,Time.hours(1))
                     .timeWindow(averagingPeriod)
                     .aggregate(new ChemicalCompoundMean(compoundString), new ChemicalCompoundCollector(compoundString))
-                    .map(query1::sendMessagesSQS);
+                    .map(query1::sendMessagesSQS); //passare variabile query1 inizializzata prima come  arogmento della funzione sendMessagesSQS
                     //.writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE)
                     //.setParallelism(1);
         });
