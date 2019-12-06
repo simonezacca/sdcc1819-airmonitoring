@@ -1,8 +1,11 @@
 package sdcc1819;
 
+import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.google.gson.JsonObject;
@@ -35,36 +38,45 @@ import util.SDCCExecutionEnvironment;
 import util.SplitStreamByChemicalCompound;
 import util.StringToTimeUnit;
 
+import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
-public class Query1 {
+public class Query1 implements Serializable {
 
-    private static final String QUEUE_NAME = "air-monitoring" + new Date().getTime();
-    private static final AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+    private static final String QUEUE_NAME = "air-monitoring";
+    private static AmazonSQS sqs;
     private static String queueUrl;
+    private static CreateQueueRequest createQueueRequest;
 
-    public Query1() {
+    public Query1(){
         init();
     }
 
-    private void init(){
+    private static void init(){
+        System.out.println("AWS_SECRET_ACCESS_KEY: " + System.getenv("AWS_SECRET_ACCESS_KEY"));
+        sqs = AmazonSQSClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider()).build();
+
         try {
-            CreateQueueResult create_result = sqs.createQueue(QUEUE_NAME);
+            System.out.println("Inizializzo SQS");
+            createQueueRequest = new CreateQueueRequest(QUEUE_NAME);
         } catch (AmazonSQSException e) {
             if (!e.getErrorCode().equals("QueueAlreadyExists")) {
                 throw e;
             }
         }
-        finally {
-            queueUrl = sqs.getQueueUrl(QUEUE_NAME).getQueueUrl();
-        }
+        //queueUrl = sqs.getQueueUrl(QUEUE_NAME).getQueueUrl();
+        System.out.println("Stringa di prova");
+        queueUrl = sqs.createQueue(createQueueRequest).getQueueUrl();
+        System.out.println("queueUrl: " + queueUrl);
     }
 
     public static void main(String[] args) {
+
+        Query1 query1 = new Query1();
 
         // Inizializzo variabile d'ambiente
         StreamExecutionEnvironment env = SDCCExecutionEnvironment.getExecutionEnvironment();
@@ -109,6 +121,7 @@ public class Query1 {
         *  Abbiamo un flusso per ogni composto, con il proprio tempo d'aggregazione
         *  Il traffico in entrata viene processato ed infine scritto su txt
         * */
+
         FluxesMap fluxesMap = SplitStreamByChemicalCompound.split(originalStream);
         fluxesMap.forEach((compoundString,compoundStream)->{
             Tuple3<Double, String, String> limitTupleForCompound = limitValueMap.getLimitValue(compoundString);
@@ -119,7 +132,7 @@ public class Query1 {
                     //.timeWindow(averagingPeriod,Time.hours(1))
                     .timeWindow(averagingPeriod)
                     .aggregate(new ChemicalCompoundMean(compoundString), new ChemicalCompoundCollector(compoundString))
-                    .map(Query1::sendMessagesSQS);
+                    .map(query1::sendMessagesSQS);
                     //.writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE)
                     //.setParallelism(1);
         });
@@ -132,12 +145,17 @@ public class Query1 {
         }
     }
 
-    private static JsonObject sendMessagesSQS(JsonObject jsonObject){
-
+    private JsonObject sendMessagesSQS(JsonObject jsonObject){
+        System.out.println("queueUrl: " + queueUrl);
+        init();
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
                 .withMessageBody(String.valueOf(jsonObject))
                 .withDelaySeconds(5);
+        /*SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(queueUrl)
+                .withMessageBody("Messaggio di prova")
+                .withDelaySeconds(5);*/
         sqs.sendMessage(send_msg_request);
 
 

@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "takes messages from SQS and save it on DynamoDB",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \\\"Error: no tests specified\\\" && exit 1"
-  },
   "dependencies": {
     "aws-sdk": "latest"
   },

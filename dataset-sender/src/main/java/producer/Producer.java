@@ -47,6 +47,7 @@ public class Producer {
         try {
             for(String line: lines){
                 record = new ProducerRecord(topicName, line);
+                Thread.sleep(2000);
                 kafkaProducer.send(record);
             }
         }

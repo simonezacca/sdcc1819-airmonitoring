@@ -8,12 +8,6 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import util.TimeStampConverter;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, JsonObject, String, TimeWindow>{
 
     LimitValueMap limitValueMap = new LimitValueMap();
@@ -46,6 +40,7 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Jso
             sb.append("Limit Value Counter: " + this.counterMap.get(s));
         }
         //out.collect(sb.toString());
+        System.out.println("Stat: " + sb.toString());
         out.collect(writeToJson(compoundName, average, s, context.window().getStart()));
         }
 
