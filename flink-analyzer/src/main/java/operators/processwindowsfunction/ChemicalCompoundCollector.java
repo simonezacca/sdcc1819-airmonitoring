@@ -44,13 +44,13 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Jso
         out.collect(writeToJson(compoundName, average, s, context.window().getStart()));
         }
 
-    private JsonObject writeToJson(String chemicalCompound, double value, String sensor_id, long timestamp){
+
+    private JsonObject writeToJson(String chemicalCompound, double value, String sensor_id, long timestamp) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("chemical_compound", chemicalCompound);
-        jsonObject.addProperty("value", value);
+        jsonObject.addProperty("value", Double.toString(value));
         jsonObject.addProperty("sensor_id", sensor_id);
-        jsonObject.addProperty("timestamp", timestamp);
+        jsonObject.addProperty("timestamp", Long.toString(timestamp));
         return jsonObject;
     }
-
 }
