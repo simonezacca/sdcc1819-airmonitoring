@@ -22,4 +22,9 @@ public class StringToTimeUnit {
         return null;
     }
 
+    public static Double stringToExcessForCompound(String s){
+        String p = s.substring(1);
+        Double d = Double.parseDouble(p);
+        return d;
+    }
 }

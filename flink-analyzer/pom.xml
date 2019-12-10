@@ -51,6 +51,11 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-sqs</artifactId>
     </dependency>
+    <!-- Amazon SNS dependecies -->
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-sns</artifactId>
+    </dependency>
 
       <!-- Apache Flink dependencies -->
       <!-- These dependencies are provided, because they should not be packaged into the JAR file. -->
