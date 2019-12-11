@@ -1,5 +1,12 @@
 package sdcc1819;
 
+import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.amazonaws.services.sqs.model.CreateQueueRequest;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.google.gson.JsonObject;
 import map.FluxesMap;
 import map.LimitValueMap;
 import operators.aggregate.ChemicalCompoundMean;
@@ -24,9 +31,35 @@ import util.SDCCExecutionEnvironment;
 import util.SplitStreamByChemicalCompound;
 import util.StringToTimeUnit;
 
+import java.io.Serializable;
 import java.util.Properties;
 
-public class Query2 {
+public class Query2 implements Serializable {
+
+    private static final String QUEUE_NAME = "air-monitoring-query2";
+    private static AmazonSQS sqs;
+    private static String queueUrl;
+    private static CreateQueueRequest createQueueRequest;
+
+    public Query2(){
+        init();
+    }
+
+    private static void init(){
+        sqs = AmazonSQSClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider()).build();
+
+        try {
+            System.out.println("Inizializzo SQS");
+            createQueueRequest = new CreateQueueRequest(QUEUE_NAME);
+        } catch (AmazonSQSException e) {
+            if (!e.getErrorCode().equals("QueueAlreadyExists")) {
+                throw e;
+            }
+        }
+        queueUrl = sqs.createQueue(createQueueRequest).getQueueUrl();
+        System.out.println("Queue created, queueUrl: " + queueUrl);
+    }
+
     public static void main(String[] args) {
 
         StreamExecutionEnvironment env = SDCCExecutionEnvironment.getExecutionEnvironment();
@@ -68,5 +101,16 @@ public class Query2 {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private JsonObject sendMessagesSQS(JsonObject jsonObject){
+        System.out.println("queueUrl: " + queueUrl);
+        init();
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(queueUrl)
+                .withMessageBody(String.valueOf(jsonObject))
+                .withDelaySeconds(5);
+        sqs.sendMessage(send_msg_request);
+        return jsonObject;
     }
 }

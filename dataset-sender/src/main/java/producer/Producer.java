@@ -67,7 +67,7 @@ public class Producer {
                 break;
             }
             try {
-                Thread.sleep(200);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

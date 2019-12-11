@@ -82,11 +82,11 @@ function update(jsonObject) {
             "sensor_id": jsonObject.sensor_id,
         },
         // TODO rivedere bene update
-        UpdateExpression: "set info.rating = :r, info.plot=:p, info.actors=:a",
+        UpdateExpression: "set item.lat =:lat, item.lon=:lon, item.compounds=:compounds",
         ExpressionAttributeValues:{
-            ":r":5.5,
-            ":p":"Everything happens all at once.",
-            ":a":["Larry", "Moe", "Curly"]
+            ":lat": jsonObject.lat,
+            ":lon":jsonObject.lon,
+            ":compounds":[jsonObject.CO, jsonObject.NO_2, jsonObject.PM10, jsonObject.SO_2]
         },
         ReturnValues:"UPDATED_NEW"
     };

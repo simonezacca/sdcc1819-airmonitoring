@@ -1,12 +1,7 @@
 package sdcc1819;
 
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClient;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
-import com.amazonaws.services.sqs.model.CreateQueueResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.google.gson.JsonObject;
 import map.FluxesMap;
@@ -17,32 +12,22 @@ import operators.flatmap.SensorExtractor;
 import operators.key.KeyBySensorID;
 import operators.processwindowsfunction.ChemicalCompoundCollector;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
-import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
-import org.apache.flink.util.Collector;
-import scala.Tuple2;
 import scala.Tuple3;
-import scala.util.parsing.json.JSON;
 import sdcc1819.model.Data;
 import sdcc1819.model.Sensor;
 import sdcc1819.serializers.json.AirDataJsonSerializer;
 import time.DateTimeAscendingAssigner;
+import util.InitAmazonSQS;
 import util.SDCCExecutionEnvironment;
 import util.SplitStreamByChemicalCompound;
 import util.StringToTimeUnit;
 
 import java.io.Serializable;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
 import java.util.Properties;
 
 public class Query1 implements Serializable {
@@ -52,10 +37,9 @@ public class Query1 implements Serializable {
     private static String queueUrl;
     private static CreateQueueRequest createQueueRequest;
 
-    public Query1(){
-        init();
-    }
+    public Query1(){};
 
+    /*
     private static void init(){
         //System.out.println("AWS_SECRET_ACCESS_KEY: " + System.getenv("AWS_SECRET_ACCESS_KEY"));
         sqs = AmazonSQSClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider()).build();
@@ -69,10 +53,11 @@ public class Query1 implements Serializable {
             }
         }
         //queueUrl = sqs.getQueueUrl(QUEUE_NAME).getQueueUrl();
-        System.out.println("Stringa di prova");
         queueUrl = sqs.createQueue(createQueueRequest).getQueueUrl();
-        System.out.println("queueUrl: " + queueUrl);
+        System.out.println("Queue created, queueUrl: " + queueUrl);
     }
+    */
+
 
     public static void main(String[] args) {
 
@@ -136,8 +121,6 @@ public class Query1 implements Serializable {
                     //.writeAsText("/flink-analyzer/output_query1_" + compoundString + ".txt", FileSystem.WriteMode.OVERWRITE)
                     //.setParallelism(1);
         });
-
-
         try {
             env.execute();
         } catch (Exception e) {
@@ -147,16 +130,16 @@ public class Query1 implements Serializable {
 
     private JsonObject sendMessagesSQS(JsonObject jsonObject){
         System.out.println("queueUrl: " + queueUrl);
-        init();
+        InitAmazonSQS instanceSQS = InitAmazonSQS.getInstance();
         SendMessageRequest send_msg_request = new SendMessageRequest()
-                .withQueueUrl(queueUrl)
+                .withQueueUrl(instanceSQS.getQueueUrl())
                 .withMessageBody(String.valueOf(jsonObject))
                 .withDelaySeconds(5);
         /*SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
                 .withMessageBody("Messaggio di prova")
                 .withDelaySeconds(5);*/
-        sqs.sendMessage(send_msg_request);
+        instanceSQS.getSqs().sendMessage(send_msg_request);
 
 
         // Send multiple messages to the queue
