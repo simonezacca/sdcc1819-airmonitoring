@@ -1,0 +1,220 @@
+version: '2.4'
+
+networks: 
+    custom_network:
+        driver: bridge
+
+services:
+
+    zookeeper:
+        image: wurstmeister/zookeeper
+        container_name: zookeeper
+        hostname: zookeeper
+        networks: 
+            - custom_network
+        ports:
+            - '2181:2181'
+        environment:
+            - ALLOW_ANONYMOUS_LOGIN=yes
+    
+    kafka:
+        image: wurstmeister/kafka
+        container_name: kafka
+        hostname: kafka
+        networks: 
+            - custom_network
+        ports:
+            - '9092:9092'
+        depends_on:
+            - zookeeper
+        environment:
+            - KAFKA_ADVERTISED_HOST_NAME=kafka
+            - BROKER_ID=0
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+            - KAFKA_LOG_RETENTION_HOURS=1
+            - KAFKA_MESSAGE_MAX_BYTES=2000000000
+            #- KAFKA_CREATE_TOPICS="LINEPROTO:1:1,JSONPROTO:1:1"
+            - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+
+    kafka-producer:
+        image: wurstmeister/kafka
+        container_name: kafka-producer
+        hostname: kafka-producer
+        networks: 
+            - custom_network
+        expose:
+            - "5005" # remote intellij debug
+        ports:
+            - "5005:5005" # remote intellij debug
+        depends_on:
+            - zookeeper
+            - kafka
+        environment:
+            - KAFKA_ADVERTISED_HOST_NAME=kafka
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+            - KAFKA_LOG_RETENTION_HOURS=1
+            - KAFKA_MESSAGE_MAX_BYTES=2000000000
+        entrypoint: /bin/sh
+        stdin_open: true
+        tty: true
+        volumes:
+            - ./dataset-sender:/dataset-sender
+            #- ../sdcc1819-airmonitoring:/dataset-producer
+
+    #kafka-consumer:
+    #    image: wurstmeister/kafka
+    #    container_name: kafka-consumer
+    #    hostname: kafka-consumer
+    #    networks: 
+    #        - custom_network
+    #    expose:
+    #        - "5006" # remote intellij debug
+    #    ports:
+    #        - "5006:5006" # remote intellij debug
+    #    depends_on:
+    #        - zookeeper
+    #        - kafka
+    #    environment:
+    #        - KAFKA_ADVERTISED_HOST_NAME=kafka
+    #        - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+    #        - KAFKA_LOG_RETENTION_HOURS=1
+    #        - KAFKA_MESSAGE_MAX_BYTES=2000000000
+    #    entrypoint: /bin/sh
+    #    stdin_open: true
+    #    tty: true
+    #    volumes:
+    #        - ./dataset-sender:/dataset-sender
+    #        #- ../sdcc1819-airmonitoring:/dataset-consumer
+
+
+    influxdb:
+        image: influxdb
+        container_name: influxdb
+        hostname: influxdb
+        networks:
+          - custom_network
+        expose:
+          - "8083"
+          - "8086"
+        ports:
+          - "8086:8086"     #HTTP API port
+          - "8083:8083"     #administrator interface port
+        environment:
+            - INFLUX_DB=db0
+            - INFLUXDB_CONFIG_PATH=/etc/influxdb/influxdb.conf
+        volumes:
+            - ./influxdb:/var/lib/influxdb
+            - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
+
+
+    telegraf:
+        image: telegraf
+        container_name: telegraf
+        hostname: telegraf
+        networks:
+          - custom_network
+        expose:
+          - "8125"
+          - "8092"
+          - "8094"
+        ports:
+          - "8125:8125"
+          - "8092:8092"
+          - "8094:8094"
+        depends_on:
+          - influxdb
+          - kafka
+        entrypoint: "telegraf"
+        environment:
+            - INFLUXDB_URL=http://influxdb:8086
+        volumes:
+          - ./telegraf:/var/lib/telegraf
+          - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+
+
+    chronograf:
+        image: chronograf
+        container_name: chronograf
+        hostname: chronograf
+        networks:
+            - custom_network
+        expose:
+            - "8888"
+        ports:
+            - "8888:8888"
+        depends_on:
+            - influxdb
+        environment:
+            - INFLUXDB_URL=http://influxdb:8086
+        volumes:
+          - ./chronograf:/var/lib/chronograf
+
+
+    #kapacitor:
+    #    image: kapacitor
+    #    container_name: kapacitor
+    #    hostname: kapacitor
+    #    networks: 
+    #        - custom_network
+    #    expose:
+    #        - "9092"
+    #    ports:
+    #        - "900:9092"
+    #    depends_on:
+    #        - influxdb
+    #    environment:
+    #        #- INFLUXDB_URL=http://influxdb:8086
+    #        - KAPACITOR_LOGGING_LEVEL=INFO
+    #        - KAPACITOR_REPORTING_ENABLED=false
+    #        - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
+    #    volumes:
+    #      - ./kapacitor:/var/lib/kapacitor
+
+    flink-jobmanager:
+        image: flink:1.8-scala_2.11
+        hostname: flink-jobmanager
+        container_name: flink-jobmanager
+        expose:
+            - "6123"
+            - "5007"
+        networks:
+            - custom_network
+        ports:
+            - "8081:8081"
+            - "5007:5007"
+        command: jobmanager
+        environment:
+            - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+            - AWS_ACCESS_KEY_ID=AKIAV3IXPVU7EX5ERHXG
+            - AWS_SECRET_ACCESS_KEY=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
+            - AWS_REGION=eu-central-1
+            - AWS_FORMAT=json
+            - FLINK_ENV_JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,address=5007,server=y,suspend=n
+        volumes:
+            - ./flink-analyzer:/flink-analyzer
+            
+    flink-taskmanager:
+        image: flink:1.8-scala_2.11
+        hostname: flink-taskmanager
+        container_name: flink-taskmanager
+        networks:
+            - custom_network
+        expose:
+            - "5006" # remote intellij debug
+            - "6121"
+            - "6122"
+        ports:
+            - "5006:5006"  # remote intellij debug
+        depends_on:
+            - flink-jobmanager
+        command: taskmanager
+        environment:
+            - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+            - AWS_ACCESS_KEY_ID=AKIAV3IXPVU7EX5ERHXG
+            - AWS_SECRET_ACCESS_KEY=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
+            - AWS_REGION=eu-central-1
+            - AWS_FORMAT=json
+            - FLINK_ENV_JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,address=5006,server=y,suspend=n
+        volumes:
+            - ./flink-analyzer:/flink-analyzer
+            

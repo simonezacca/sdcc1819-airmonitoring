@@ -1,0 +1,9 @@
+from wurstmeister/kafka
+
+# setting environment variables
+env KAFKA_ADVERTISED_HOST_NAME=kafka
+env BROKER_ID=0
+env KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+env KAFKA_LOG_RETENTION_HOURS=1
+env KAFKA_MESSAGE_MAX_BYTES=2000000000
+env KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
