@@ -1,0 +1,20 @@
+version: 1
+task_definition:
+  #ecs_network_mode: awsvpc
+  services:
+    zookeeper:
+      essential: true
+    kafka:
+      essential: false
+    kafka-producer:
+      essential: false
+    influxdb:
+      essential: false
+    telegraf:
+      essential: false
+    chronograf:
+      essential: false
+    flink-jobmanager:
+      essential: false
+    flink-taskmanager:
+      essential: false

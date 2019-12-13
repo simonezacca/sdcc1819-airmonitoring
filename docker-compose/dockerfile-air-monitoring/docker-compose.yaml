@@ -1,4 +1,4 @@
-version: '2.4'
+version: '2'
 
 networks: 
     custom_network:
@@ -7,18 +7,24 @@ networks:
 services:
 
     zookeeper:
-        image: wurstmeister/zookeeper
+        image: andrealeo93/sdcc-repository:Zookeeper
         container_name: zookeeper
         hostname: zookeeper
         networks: 
             - custom_network
         ports:
             - '2181:2181'
-        environment:
-            - ALLOW_ANONYMOUS_LOGIN=yes
-    
+        mem_limit: 2G
+        mem_reservation: 1G
+        logging: 
+            driver: awslogs
+            options:
+                awslogs-group: "awslogs-air-monitoring-ecs"
+                awslogs-region: "eu-central-1"
+                awslogs-stream-prefix: "awslogs-air-monitoring"
+
     kafka:
-        image: wurstmeister/kafka
+        image: andrealeo93/sdcc-repository:Kafka
         container_name: kafka
         hostname: kafka
         networks: 
@@ -27,17 +33,20 @@ services:
             - '9092:9092'
         depends_on:
             - zookeeper
-        environment:
-            - KAFKA_ADVERTISED_HOST_NAME=kafka
-            - BROKER_ID=0
-            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-            - KAFKA_LOG_RETENTION_HOURS=1
-            - KAFKA_MESSAGE_MAX_BYTES=2000000000
-            #- KAFKA_CREATE_TOPICS="LINEPROTO:1:1,JSONPROTO:1:1"
-            - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+        links:
+            - zookeeper
+        mem_limit: 2G
+        mem_reservation: 1G
+        logging: 
+            driver: awslogs
+            options:
+                awslogs-group: "awslogs-air-monitoring-ecs"
+                awslogs-region: "eu-central-1"
+                awslogs-stream-prefix: "awslogs-air-monitoring"
+        
 
     kafka-producer:
-        image: wurstmeister/kafka
+        image: andrealeo93/sdcc-repository:Kafka-producer
         container_name: kafka-producer
         hostname: kafka-producer
         networks: 
@@ -49,46 +58,24 @@ services:
         depends_on:
             - zookeeper
             - kafka
-        environment:
-            - KAFKA_ADVERTISED_HOST_NAME=kafka
-            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-            - KAFKA_LOG_RETENTION_HOURS=1
-            - KAFKA_MESSAGE_MAX_BYTES=2000000000
+        links:
+            - zookeeper
+            - kafka
         entrypoint: /bin/sh
         stdin_open: true
         tty: true
-        volumes:
-            - ./dataset-sender:/dataset-sender
-            #- ../sdcc1819-airmonitoring:/dataset-producer
-
-    #kafka-consumer:
-    #    image: wurstmeister/kafka
-    #    container_name: kafka-consumer
-    #    hostname: kafka-consumer
-    #    networks: 
-    #        - custom_network
-    #    expose:
-    #        - "5006" # remote intellij debug
-    #    ports:
-    #        - "5006:5006" # remote intellij debug
-    #    depends_on:
-    #        - zookeeper
-    #        - kafka
-    #    environment:
-    #        - KAFKA_ADVERTISED_HOST_NAME=kafka
-    #        - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-    #        - KAFKA_LOG_RETENTION_HOURS=1
-    #        - KAFKA_MESSAGE_MAX_BYTES=2000000000
-    #    entrypoint: /bin/sh
-    #    stdin_open: true
-    #    tty: true
-    #    volumes:
-    #        - ./dataset-sender:/dataset-sender
-    #        #- ../sdcc1819-airmonitoring:/dataset-consumer
-
+        mem_limit: 512m
+        mem_reservation: 256m
+        logging: 
+            driver: awslogs
+            options:
+                awslogs-group: "awslogs-air-monitoring-ecs"
+                awslogs-region: "eu-central-1"
+                awslogs-stream-prefix: "awslogs-air-monitoring"
+        
 
     influxdb:
-        image: influxdb
+        image: andrealeo93/sdcc-repository:Influxdb
         container_name: influxdb
         hostname: influxdb
         networks:
@@ -99,16 +86,18 @@ services:
         ports:
           - "8086:8086"     #HTTP API port
           - "8083:8083"     #administrator interface port
-        environment:
-            - INFLUX_DB=db0
-            - INFLUXDB_CONFIG_PATH=/etc/influxdb/influxdb.conf
-        volumes:
-            - ./influxdb:/var/lib/influxdb
-            - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
-
+        mem_limit: 3G
+        mem_reservation: 1G
+        logging: 
+            driver: awslogs
+            options:
+                awslogs-group: "awslogs-air-monitoring-ecs"
+                awslogs-region: "eu-central-1"
+                awslogs-stream-prefix: "awslogs-air-monitoring"
+        
 
     telegraf:
-        image: telegraf
+        image: andrealeo93/sdcc-repository:Telegraf
         container_name: telegraf
         hostname: telegraf
         networks:
@@ -124,16 +113,23 @@ services:
         depends_on:
           - influxdb
           - kafka
-        entrypoint: "telegraf"
-        environment:
-            - INFLUXDB_URL=http://influxdb:8086
-        volumes:
-          - ./telegraf:/var/lib/telegraf
-          - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
-
+        links:
+          - influxdb
+          - kafka
+          - zookeeper
+        entrypoint: 'bash -c "sleep 20 && telegraf"'
+        mem_limit: 2G
+        mem_reservation: 1G
+        logging: 
+            driver: awslogs
+            options:
+                awslogs-group: "awslogs-air-monitoring-ecs"
+                awslogs-region: "eu-central-1"
+                awslogs-stream-prefix: "awslogs-air-monitoring"
+        
 
     chronograf:
-        image: chronograf
+        image: andrealeo93/sdcc-repository:Chronograf
         container_name: chronograf
         hostname: chronograf
         networks:
@@ -144,34 +140,20 @@ services:
             - "8888:8888"
         depends_on:
             - influxdb
-        environment:
-            - INFLUXDB_URL=http://influxdb:8086
-        volumes:
-          - ./chronograf:/var/lib/chronograf
-
-
-    #kapacitor:
-    #    image: kapacitor
-    #    container_name: kapacitor
-    #    hostname: kapacitor
-    #    networks: 
-    #        - custom_network
-    #    expose:
-    #        - "9092"
-    #    ports:
-    #        - "900:9092"
-    #    depends_on:
-    #        - influxdb
-    #    environment:
-    #        #- INFLUXDB_URL=http://influxdb:8086
-    #        - KAPACITOR_LOGGING_LEVEL=INFO
-    #        - KAPACITOR_REPORTING_ENABLED=false
-    #        - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
-    #    volumes:
-    #      - ./kapacitor:/var/lib/kapacitor
+        links:
+            - influxdb
+        mem_limit: 512m
+        mem_reservation: 256m
+        logging: 
+            driver: awslogs
+            options:
+                awslogs-group: "awslogs-air-monitoring-ecs"
+                awslogs-region: "eu-central-1"
+                awslogs-stream-prefix: "awslogs-air-monitoring"
+        
 
     flink-jobmanager:
-        image: flink:1.8-scala_2.11
+        image: andrealeo93/sdcc-repository:Flink-jobmanager
         hostname: flink-jobmanager
         container_name: flink-jobmanager
         expose:
@@ -184,17 +166,22 @@ services:
             - "5007:5007"
         command: jobmanager
         environment:
-            - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
             - AWS_ACCESS_KEY_ID=AKIAV3IXPVU7EX5ERHXG
             - AWS_SECRET_ACCESS_KEY=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
             - AWS_REGION=eu-central-1
             - AWS_FORMAT=json
-            - FLINK_ENV_JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,address=5007,server=y,suspend=n
-        volumes:
-            - ./flink-analyzer:/flink-analyzer
-            
+        mem_limit: 2G
+        mem_reservation: 1G
+        logging: 
+            driver: awslogs
+            options:
+                awslogs-group: "awslogs-air-monitoring-ecs"
+                awslogs-region: "eu-central-1"
+                awslogs-stream-prefix: "awslogs-air-monitoring"
+        
+
     flink-taskmanager:
-        image: flink:1.8-scala_2.11
+        image: andrealeo93/sdcc-repository:Flink-jobmanager
         hostname: flink-taskmanager
         container_name: flink-taskmanager
         networks:
@@ -207,14 +194,19 @@ services:
             - "5006:5006"  # remote intellij debug
         depends_on:
             - flink-jobmanager
+        links:
+            - flink-jobmanager
         command: taskmanager
         environment:
-            - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
             - AWS_ACCESS_KEY_ID=AKIAV3IXPVU7EX5ERHXG
             - AWS_SECRET_ACCESS_KEY=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
             - AWS_REGION=eu-central-1
             - AWS_FORMAT=json
-            - FLINK_ENV_JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,address=5006,server=y,suspend=n
-        volumes:
-            - ./flink-analyzer:/flink-analyzer
-            
+        mem_limit: 3G
+        mem_reservation: 1G
+        logging: 
+            driver: awslogs
+            options:
+                awslogs-group: "awslogs-air-monitoring-ecs"
+                awslogs-region: "eu-central-1"
+                awslogs-stream-prefix: "awslogs-air-monitoring"
