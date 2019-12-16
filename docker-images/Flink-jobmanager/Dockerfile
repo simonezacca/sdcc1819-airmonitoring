@@ -5,3 +5,6 @@ env JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
 
 # adding file to the image
 add . /flink-analyzer
+copy docker-entrypoint.sh /
+
+entrypoint ["/docker-entrypoint.sh"]
