@@ -38,3 +38,4 @@ docker-compose/influxdb/data/*
 docker-compose/influxdb/wal/*
 docker-compose/dataset-sender/*.csv
 /aws/lambdas/*/node_modules/
+/aws/lambdas/sensor/libs/

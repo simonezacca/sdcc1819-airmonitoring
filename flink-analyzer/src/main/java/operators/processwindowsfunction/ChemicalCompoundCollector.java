@@ -39,12 +39,12 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Jso
 
         for (Double d: elements) {
             sb.append(d+"\t");
-            // TODO inserire this.limitValue
-            if(d.longValue() >= 0.0){
+            // inserire this.limitValue
+            if(d.longValue() >= this.limitValue){
                 this.counterMap.hit(s);
                 double excessValue = stringToExcessForCompound(this.limitValueMap.getLimitValue(this.compoundName)._3());
-                // TODO Inserire excessValue
-                if(this.counterMap.get(s) >= 0.0) {
+                // Inserire excessValue
+                if(this.counterMap.get(s) >= excessValue) {
                     InitAmazonSNS instanceSNS = InitAmazonSNS.getInstance();
 
                     // Publish a message to an Amazon SNS topic.
