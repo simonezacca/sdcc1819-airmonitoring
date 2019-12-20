@@ -1,6 +1,6 @@
 'use strict';
 var AWS = require('aws-sdk');
-var dynamoDB = new AWS.DynamoDB({apiVersion: '2012-08-10'}); //da vedere api version
+var dynamoDB = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 exports.handler = function(event, context, callback){
     var jsonObject = JSON.parse(event.Records[0].Sns.Message);
@@ -8,8 +8,8 @@ exports.handler = function(event, context, callback){
     console.log("Received event: ", event.Records[0].Sns.Message);
     dynamoDB.putItem({
         TableName: "alarm",
-        Item: {     // definire tutti i campi da inserire nella query
-            "chemical_compound": {     //capire come prendere tutti i valori dal body del msg sqs
+        Item: {
+            "chemical_compound": {
                 "S": jsonObject.chemical_compound
             },
             "sensorID" : {
