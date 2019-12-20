@@ -65,18 +65,11 @@ elif [ "$1" = "jobmanager" ]; then
     fi
     envsubst < "${CONF_FILE}" > "${CONF_FILE}.tmp" && mv "${CONF_FILE}.tmp" "${CONF_FILE}"
 
-    echo "config file: " && grep '^[^\n#]' "${CONF_FILE}"
-    exec $(drop_privs_cmd) "$FLINK_HOME/bin/jobmanager.sh" start-foreground "$@" &
-    
+    sh /run_flink_jobs.sh &
 
-    sleep 20 #custom code 
-    if [ -n "${FLINK_CLASS}" ] && [ -n "${FLINK_JAR}" ]; then
-        IFS=',' read -r -a flink_classes <<< "$FLINK_CLASS"
-        for element in "${flink_classes[@]}"
-            do
-            exec "$FLINK_HOME"/bin/flink run -c "$element" "$FLINK_JAR" &
-        done
-    fi
+    echo "config file: " && grep '^[^\n#]' "${CONF_FILE}"
+    exec $(drop_privs_cmd) "$FLINK_HOME/bin/jobmanager.sh" start-foreground "$@"
+
 
 elif [ "$1" = "taskmanager" ]; then
     shift 1
