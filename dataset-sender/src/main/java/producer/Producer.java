@@ -40,14 +40,19 @@ public class Producer {
         List<String> lines = null;
         if (topicName.equals("LINEPROTO"))
             lines = AirDataLineProtocolSerializer.serialize(value);
-        if (topicName.equals("JSONPROTO"))
+        if (topicName.equals("JSONPROTO")) {
             lines = AirDataJsonSerializer.serialize(value);
-
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         ProducerRecord record;
         try {
             for(String line: lines){
                 record = new ProducerRecord(topicName, line);
-                Thread.sleep(2000);
+                //Thread.sleep(2000);
                 kafkaProducer.send(record);
             }
         }
@@ -61,17 +66,17 @@ public class Producer {
 
         List<Data> records = parserCSV.parseFile();
         System.out.println("File parsato!!");
-        int i = 0;
+        //int i = 0;
         for( Data d : records){
-            if (i==30){
+            /*if (i==30){
                 break;
-            }
+            }*/
             try {
-                Thread.sleep(2000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            i++;
+            //i++;
             sendToTopic(d);
         }
     }
