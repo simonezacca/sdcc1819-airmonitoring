@@ -101,6 +101,28 @@ Resources:
       SubnetId: !Ref PublicSubnetTwo
       RouteTableId: !Ref PublicRouteTable
 
+  #ElasticacheSecurityGroup:
+  #  Type: 'AWS::EC2::SecurityGroup'
+  #  Properties:
+  #    GroupDescription: Elasticache Security Group
+  #    SecurityGroupIngress:
+  #      - IpProtocol: tcp
+  #        FromPort: '11211'
+  #        ToPort: '11211'
+  #        SourceSecurityGroupName: !Ref InstanceSecurityGroup
+
+  ElasticacheCluster:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:
+      ClusterName: 'air-monitoring-cache'
+      AutoMinorVersionUpgrade: 'true'
+      Engine: redis
+      CacheNodeType: cache.t2.micro
+      NumCacheNodes: '1'
+      VpcSecurityGroupIds:
+        - !GetAtt
+          - EcsHostSecurityGroup
+      #    - GroupId
 
   EC2Instance:
     Type: AWS::EC2::Instance
