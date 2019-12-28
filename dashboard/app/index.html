@@ -1,0 +1,109 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+    <!-- build:css(.) styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="bower_components/metisMenu/dist/metisMenu.min.css">
+    <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.min.css">
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css" type="text/css">
+    <link rel="stylesheet" href="bower_components/datatables.net-bs/css/dataTables.bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="bower_components/AngularJS-Toaster/toaster.min.css" type="text/css">
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/sb-admin-2.css">
+    <!-- endbuild -->
+
+    <!-- build:js(.) scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="bower_components/json3/lib/json3.min.js"></script>
+    <script src="bower_components/oclazyload/dist/ocLazyLoad.min.js"></script>
+    <script src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
+    <script src="bower_components/angular-ui-select/dist/select.js"></script>
+    <script src="bower_components/datatables.net/js/jquery.dataTables.js"></script>
+    <script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.js"></script>
+    <script src="bower_components/angularjs-datatables/dist/angular-datatables.js"></script>
+    <script src="bower_components/angular-jwt/dist/angular-jwt.js"></script>
+    <script src="bower_components/angular-swx-session-storage/release/swx-session-storage.js"></script>
+    <script src="bower_components/AngularJS-Toaster/toaster.js"></script>
+    <script src="bower_components/angular-acl/src/angular-acl.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="scripts/app.js"></script>
+    <script src="scripts/parameters.js"></script>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/run.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js({.tmp,app}) scripts/states.js -->
+    <script src="scripts/states/dashboard.state.js"></script>
+    <script src="scripts/states/user.state.js"></script>
+    <script src="scripts/states/error.state.js"></script>
+    <script src="scripts/states/batch.state.js"></script>
+    <script src="scripts/states/realtime.state.js"></script>
+    <script src="scripts/states/sensors.state.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js({.tmp,app}) scripts/directives.js -->
+    <script src='scripts/directives/header/header.js'></script>
+    <script src='scripts/directives/header/header-notification/header-notification.js'></script>
+    <script src='scripts/directives/sidebar/sidebar.js'></script>
+    <script src='scripts/directives/sidebar/sidebar-search/sidebar-search.js'></script>
+    <!-- endbuild -->
+
+    <!-- build:js({.tmp,app}) scripts/controllers.js -->
+    <script src='scripts/controllers/main.js'></script>
+    <script src='scripts/controllers/auth/loginController.js'></script>
+    <script src='scripts/controllers/user/UserCreateController.js'></script>
+    <script src='scripts/controllers/user/UserInfoController.js'></script>
+    <script src='scripts/controllers/user/UserListController.js'></script>
+    <script src='scripts/controllers/user/UserPermissionController.js'></script>
+    <script src="scripts/controllers/error/ErrorController.js"></script>
+    <script src="scripts/controllers/batch/BatchController.js"></script>
+    <script src="scripts/controllers/realtime/RealtimeController.js"></script>
+    <script src="scripts/controllers/sensors/SensorsController.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js({.tmp,app}) scripts/services.js -->
+    <script src='scripts/service/ToasterErrorHandler.js'></script>
+    <script src='scripts/service/AuthFactory.js'></script>
+    <script src='scripts/service/UserDataFactory.js'></script>
+    <script src="scripts/service/ErrorStateRedirector.js"></script>
+    <script src="scripts/service/BatchFactory.js"></script>
+    <script src="scripts/service/RealtimeFactory.js"></script>
+    <script src="scripts/service/SensorsFactory.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js({.tmp,app}) scripts/filters.js -->
+    <script src='scripts/filters/filterPermission.js'></script>
+    <!-- endbuild -->
+
+
+</head>
+
+<body>
+<div ng-app="TicketingSystemApp">
+    <toaster-container></toaster-container>
+    <div ui-view></div>
+</div>
+</body>
+
+</html>
