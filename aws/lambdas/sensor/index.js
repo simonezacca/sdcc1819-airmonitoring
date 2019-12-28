@@ -6,7 +6,6 @@ var tableName = "sensor_information";
 const msgLibs = require('./libs/responseMessage.js');
 
 
-
 function create(jsonObject, cb) {
 
     dynamoDB.putItem({
@@ -63,9 +62,9 @@ function update(sensorid, jsonObject, cb) {
             ':SO_2': jsonObject.SO_2,
             ':NO_2': jsonObject.NO_2,
             ':CO': jsonObject.CO,
-            ':PM10': jsonObject.PM10,
+            ':PM10': jsonObject.PM10
         }
-    }
+    };
     console.log("Updating the item...");
     dynamoDB.updateItem(params, function (err, data) {
         if (err) {
@@ -159,4 +158,4 @@ exports.handler = function(event, context, callback) {
 
     }
     console.log("Received event: ", event.body);
-}
+};

@@ -219,3 +219,27 @@ services:
                 awslogs-group: "awslogs-air-monitoring-ecs"
                 awslogs-region: "eu-central-1"
                 awslogs-stream-prefix: "awslogs-air-monitoring"
+    
+    elasticache-proxy:
+        image: andrealeo93/sdcc-repository:Elasticache-proxy
+        hostname: elasticache-proxy
+        container_name: elasticache-proxy
+        networks:
+            - custom_network
+        expose:
+            - "3456"
+        ports:
+            - "3456:3456"  # remote intellij debug
+        command: bash
+        environment:
+            - LOCAL_FORWARD_PORT=3456
+            - ELASTICACHE_REMOTE_HOST=elasticache-influxdb.kzez0j.0001.euc1.cache.amazonaws.com
+            - ELASTICACHE_REMOTE_PORT=6379
+        mem_limit: 512M
+        mem_reservation: 256M
+        logging: 
+            driver: awslogs
+            options:
+                awslogs-group: "awslogs-air-monitoring-ecs"
+                awslogs-region: "eu-central-1"
+                awslogs-stream-prefix: "awslogs-air-monitoring"

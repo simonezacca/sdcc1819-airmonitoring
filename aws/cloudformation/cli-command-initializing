@@ -1,8 +1,8 @@
 
 Creation cloud formation stack
 
-aws cloudformation create-stack --stack-name sdcc-air-monitoring --template-body file://cloud-formation.yaml --parameters ParameterKey=MyKey,ParameterValue=sdcc-ec2-instance-key ParameterKey=InstanceType,ParameterValue=t2.large ParameterKey=InfluxDbVolume,ParameterValue=vol-0fffb738d0910216d --capabilities CAPABILITY_IAM
+aws cloudformation create-stack --stack-name sdcc-air-monitoring --template-body file://cloud-formation.yaml --parameters ParameterKey=MyKey,ParameterValue=sdcc-ec2-instance-key ParameterKey=InstanceType,ParameterValue=t2.large ParameterKey=InfluxDbVolume,ParameterValue=vol-03649a5ee9fdbdd62 --capabilities CAPABILITY_IAM
 
 Creation ecs environment
 
-ecs-cli compose --verbose --file docker-compose.yaml --ecs-params air-monitoring-ecs-params.yaml --cluster-config leonetti_free_tier --cluster sdcc-air-monitoring 	--placement-strategy type="spread",field="attributes:ecs.availability-zone" service up --timeout 5
+ecs-cli compose --verbose --file docker-compose.yaml --ecs-params air-monitoring-ecs-params.yaml --cluster-config leonetti_free_tier --cluster air-monitoring-autocreated --placement-strategy type="spread",field="attributes:ecs.availability-zone" service up --timeout 5
