@@ -140,6 +140,7 @@ Resources:
           echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
           yum install -y aws-cfn-bootstrap
           mkdir /mnt/Influxdb-volume
+          sleep 60
           mount /dev/xvdf /mnt/Influxdb-volume
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --region ${AWS::Region}
 

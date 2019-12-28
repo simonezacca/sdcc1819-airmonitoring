@@ -6,3 +6,6 @@ aws cloudformation create-stack --stack-name sdcc-air-monitoring --template-body
 Creation ecs environment
 
 ecs-cli compose --verbose --file docker-compose.yaml --ecs-params air-monitoring-ecs-params.yaml --cluster-config leonetti_free_tier --cluster air-monitoring-autocreated --placement-strategy type="spread",field="attributes:ecs.availability-zone" service up --timeout 5
+
+Redis test cli
+docker run --rm -ti --name rediscli --net host redis:alpine redis-cli -h 3.124.193.160 -p 3456 ping
