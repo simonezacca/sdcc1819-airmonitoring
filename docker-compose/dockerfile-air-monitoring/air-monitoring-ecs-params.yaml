@@ -18,3 +18,5 @@ task_definition:
       essential: false
     flink-taskmanager:
       essential: false
+    elasticache-proxy:
+      essential: false
