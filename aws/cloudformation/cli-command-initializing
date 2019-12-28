@@ -5,4 +5,4 @@ aws cloudformation create-stack --stack-name sdcc-air-monitoring --template-body
 
 Creation ecs environment
 
-ecs-cli compose --verbose --file docker-compose.yaml --ecs-params air-monitoring-ecs-params.yaml --cluster-config leonetti_free_tier --cluster sdcc-air-monitoring 	--placement-strategy type="spread",field="attributes:ecs.availability-zone" service up --timeout 5
+ecs-cli compose --verbose --file docker-compose.yaml --ecs-params air-monitoring-ecs-params.yaml --cluster-config leonetti_free_tier --cluster air-monitoring-autocreated --placement-strategy type="spread",field="attributes:ecs.availability-zone" service up --timeout 5
