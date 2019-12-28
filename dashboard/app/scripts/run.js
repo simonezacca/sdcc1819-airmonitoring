@@ -1,7 +1,7 @@
 'use strict';
 
-mainAngularModule.run(['$rootScope', 'DEBUG', 'authManager', 'DTDefaultOptions', 'AclService', 'ErrorStateRedirector', '$transitions',
-    function ($rootScope, DEBUG, authManager, DTDefaultOptions, AclService, ErrorStateRedirector, $transitions) {
+mainAngularModule.run(['$rootScope', 'DEBUG', 'authManager', 'DTDefaultOptions', 'AclService', 'ErrorStateRedirector', '$transitions', 'WSAlarmFactory',
+    function ($rootScope, DEBUG, authManager, DTDefaultOptions, AclService, ErrorStateRedirector, $transitions, WSAlarmFactory) {
 
         var aclData = {
             ROLE_GROUP_COORDINATOR: ['group_view', 'group_create', 'group_update', 'group_delete', 'group_permission', 'group_details'],
@@ -44,5 +44,7 @@ mainAngularModule.run(['$rootScope', 'DEBUG', 'authManager', 'DTDefaultOptions',
         authManager.redirectWhenUnauthenticated();
 
         DTDefaultOptions.setLanguageSource('//cdn.datatables.net/plug-ins/1.10.9/i18n/Italian.json');
+
+        WSAlarmFactory.start();
 
     }]);

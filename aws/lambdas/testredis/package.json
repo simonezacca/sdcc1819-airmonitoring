@@ -1,10 +1,9 @@
 {
-  "name": "influx24h",
+  "name": "testredis",
   "version": "1.0.0",
-  "description": "Query for Influx",
-  "main": "OLDindex.js",
+  "description": "Test Redis",
+  "main": "index.js",
   "dependencies": {
-    "async": "^3.1.0",
     "aws-sdk": "latest",
     "http.request": "^1.1.0",
     "bluebird": "^3.5.1",
@@ -14,8 +13,8 @@
     "run-local-lambda": "^1.1.0"
   },
   "scripts": {
-    "test": "run-local-lambda --file OLDindex.js --event tests/event.json",
-    "deploy": "aws lambda update-function-code --function-name arn:aws:lambda:eu-central-1:402165574974:function:influx24h --zip-file fileb://Lambda-Deployment.zip",
+    "test": "run-local-lambda --file index.js --event tests/event.json",
+    "deploy": "aws lambda update-function-code --function-name arn:aws:lambda:eu-central-1:402165574974:function:RedisTest --zip-file fileb://Lambda-Deployment.zip",
     "predeploy": "mkdir ./libs; cp ../libs/* ./libs/; zip -r Lambda-Deployment.zip * -x *.zip *.json *.log"
   },
   "author": "",

@@ -1,6 +1,6 @@
 'use strict';
 
-mainAngularModule.config(function Config($httpProvider, jwtOptionsProvider, AclServiceProvider) {
+mainAngularModule.config(function Config($httpProvider, jwtOptionsProvider, AclServiceProvider, toastrConfig) {
     // Please note we're annotating the function so that the $injector works when the file is minified
     jwtOptionsProvider.config({
         //authPrefix: '',
@@ -17,4 +17,7 @@ mainAngularModule.config(function Config($httpProvider, jwtOptionsProvider, AclS
     $httpProvider.defaults.headers.common = {"Content-Type": "application/json"};
 
     AclServiceProvider.resume();
+    angular.extend(toastrConfig,{
+        timeOut: 90000
+    })
 });

@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" type="text/css">
     <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css" type="text/css">
     <link rel="stylesheet" href="bower_components/datatables.net-bs/css/dataTables.bootstrap.css" type="text/css">
-    <link rel="stylesheet" href="bower_components/AngularJS-Toaster/toaster.min.css" type="text/css">
+    <link rel="stylesheet" href="bower_components/angular-toastr/dist/angular-toastr.css" type="text/css">
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -41,8 +41,9 @@
     <script src="bower_components/angularjs-datatables/dist/angular-datatables.js"></script>
     <script src="bower_components/angular-jwt/dist/angular-jwt.js"></script>
     <script src="bower_components/angular-swx-session-storage/release/swx-session-storage.js"></script>
-    <script src="bower_components/AngularJS-Toaster/toaster.js"></script>
     <script src="bower_components/angular-acl/src/angular-acl.js"></script>
+    <script src="bower_components/ng-websocket/ng-websocket.js"></script>
+    <script src="bower_components/angular-toastr/dist/angular-toastr.tpls.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -90,6 +91,7 @@
     <script src="scripts/service/BatchFactory.js"></script>
     <script src="scripts/service/RealtimeFactory.js"></script>
     <script src="scripts/service/SensorsFactory.js"></script>
+    <script src="scripts/service/WSAlarmFactory.js"></script>
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/filters.js -->
@@ -101,7 +103,7 @@
 
 <body>
 <div ng-app="TicketingSystemApp">
-    <toaster-container></toaster-container>
+    <!--<toaster-container></toaster-container>-->
     <div ui-view></div>
 </div>
 </body>

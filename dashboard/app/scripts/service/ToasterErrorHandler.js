@@ -1,25 +1,25 @@
 'use strict';
 
 mainAngularModule
-    .service('ToasterNotifierHandler', ['toaster', function (toaster) {
+    .service('ToasterNotifierHandler', ['toastr', function (toastr) {
         this.handleError = function (response) {
             if (response.status === 403) {
                 toaster.pop({
                     type: 'error',
                     title: 'Permesso negato',
-                    body: response.data.message,
+                    body: response.data.message
                 });
             } else if (response.status === 404) {
                 toaster.pop({
                     type: 'error',
                     title: 'Oggetto non trovato',
-                    body: response.data.message,
+                    body: response.data.message
                 });
             } else if (response.status === 409) {
                 toaster.pop({
                     type: 'error',
                     title: 'Operazione non permessa',
-                    body: response.data.message,
+                    body: response.data.message
                 });
             } else {
                 console.error(response.data);
@@ -27,18 +27,20 @@ mainAngularModule
         };
 
         this.showErrorToast = function (message) {
-            toaster.pop({
+            console.log("Message to Toast: " + message +"\n");
+            /*toaster.pop({
                 type: 'error',
                 title: 'An error occurred',
-                body: message,
-            });
+                body: message
+            });*/
+            toastr.error(message, "ALARM!")
         };
 
         this.showSuccessToast = function (title, message) {
             toaster.pop({
                 type: 'success',
                 title: title,
-                body: message,
+                body: message
             });
         };
 

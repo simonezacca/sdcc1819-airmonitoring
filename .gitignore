@@ -41,3 +41,4 @@ docker-compose/dataset-sender/*.csv
 /aws/lambdas/sensor/libs/
 /aws/lambdas/influx24h/libs/
 /aws/lambdas/readfromelasticache/libs/
+package-lock.json

@@ -4,18 +4,18 @@ mainAngularModule.config(['$stateProvider',
     function ($stateProvider) {
 
         $stateProvider
-            .state('sensors', {
+            .state('alarms', {
                 abstract: true,
-                url: '/sensors',
+                url: '/alarms',
                 templateUrl: 'views/dashboard/main.html'
                 /*data: {
                     requiresLogin: true
                 }*/
             })
-            .state('sensors.info', {
+            .state('alarms.info', {
                 url: '/info',
-                templateUrl: 'views/sensors/sensors-info.html',
-                controller: 'SensorsController',
+                templateUrl: 'views/alarms/alarms-info.html',
+                controller: 'AlarmsController',
                 controllerAs: 'ctrl'
             })
     }]);

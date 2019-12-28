@@ -10,7 +10,7 @@ var mainAngularModule = angular
         'datatables',
         'angular-jwt',
         'swxSessionStorage',
-        'toaster',
-        'mm.acl'
-
+        'mm.acl',
+        'ngWebsocket',
+        'toastr'
     ]);

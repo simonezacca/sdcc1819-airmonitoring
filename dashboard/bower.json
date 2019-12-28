@@ -26,7 +26,7 @@
     "angular-jwt": "^0.1.9",
     "angular-acl": "0.1.10",
     "angular-swx-session-storage": "^1.0.2",
-    "AngularJS-Toaster": "angularjs-toaster#^2.2.0"
+    "angular-toastr": "2.1.1"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",
@@ -34,7 +34,6 @@
   },
   "resolutions": {
     "bootstrap": "~3.1.1",
-    "angular": "^1.7.0",
     "angular-ui-router": "^1.0.18"
   },
   "appPath": "app"

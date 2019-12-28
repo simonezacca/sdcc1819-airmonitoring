@@ -24,28 +24,44 @@ mainAngularModule
                 $scope.counter = 5;
 
                 $scope.setSidebar = function () {
-                    //console.log("entro nella setSidebar");
+                    //console.log("entro nell©a setSidebar");
                     //$scope.userInfo = AuthFactory.getAuthInfo();
                     //console.log($scope.userInfo);
                     $scope.sidebarList = {
                         lists: [
                             {
-                                "title": "Batch",
-                                "num": 5,
-                                "icon": "fa-user",
-                                "state": "batch.info"
-                            },
-                            {
-                                "title": "Real time",
-                                "num": 6,
-                                "icon": "fa-ticket",
+                                "title": "Real Time",
+                                "num": 1,
+                                "icon": "fa-cloud",
                                 "state": "realtime.info"
                             },
                             {
+                                "title": "Batch",
+                                "num": 2,
+                                "icon": "fa-cogs",
+                                "state": "batch.info"
+                            },
+                            {
                                 "title": "Sensors",
-                                "num": 7,
-                                "icon": "fa-lock",
-                                "state": "sensors.info"
+                                "num": 3,
+                                "icon": "fa-sitemap",
+                                item: [
+                                    {
+                                        "nome": "Sensors",
+                                        "state": "sensors.info"
+                                    }
+                                ]
+                            },
+                            {
+                                "title": "Alarms",
+                                "num": 4,
+                                "icon": "fa-bell",
+                                item: [
+                                    {
+                                        "nome": "Alarms",
+                                        "state": "alarms.info"
+                                    }
+                                ]
                             }
                         ]
                     }

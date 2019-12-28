@@ -3,55 +3,32 @@ var http = require('http');
 var async = require('async');
 var redis = require('redis');
 var bluebird = require('bluebird');
-
-bluebird.promisifyAll(redis.RedisClient.prototype);
-bluebird.promisifyAll(redis.Multi.prototype);
 const msgLibs = require('./libs/responseMessage.js');
 const GLOBAL_KEY = 'lambda-test';
 var compounds = ["CO","PM10","SO_2", "NO_2"];
 
 
 const redisOptions = {
-    host: "18.185.37.159",
+    host: process.env.ELASTICACHEHOST,
     port: 3456
-}
-
-redis.debug_mode = true;
-
+};
 
 function writeOnRedis(event, queryName, result, callback) {
 
     console.info('Start to connect to Redis Server');
+    console.info('event.httpMethod: ', "POST");
     var client = redis.createClient(redisOptions);
-    console.info('Connected to Redis Server');
-    let id = queryName;
-    console.log("httpMethod: " + event.httpMethod)
-    if(event.httpMethod === "POST"){
-        if(result){
-            console.info('Posting data for [', id, '] with value: ', result);
-            client.hmsetAsync(GLOBAL_KEY, id, result).then(res => {
-                console.info('Redis responses for post: ', res);
-                callback(null, {body: "This is a CREATE operation and it's successful", ret: res});
-                // callback(null, {body: "This is a CREATE operation"});
-            }).catch(err => {
-                console.error("Failed to post data: ", err);
-                callback(null, {statusCode: 500, message: "Failed to post data"});
-            }).finally(() => {
-                console.info('Disconnect to Redis');
-                client.quit();
-            });
-        }
-    }
-    else {
-        callback(null, {statusCode: 500, message: 'no data is posted'})
-    }
-    /*
-    else{
-        // Send HTTP 501: Not Implemented
-        console.log("Error: unsupported HTTP method (" + event.httpMethod + ")");
-        callback(null, {statusCode: 501})
-    }*/
+    client.on('connect', function () {
+        console.log('Redis client connected');
+    });
 
+    client.on('error', function (err) {
+        console.log('Something went wrong ' + err);
+    });
+    client.set(queryName, JSON.stringify(result), redis.print);
+    console.log("FINAL RESULT: "+ JSON.stringify(result) + "\n");
+    callback(null, result);
+    client.quit();
 }
 
 function query1(post_options, context, cb) {
@@ -139,7 +116,7 @@ function createQueryObject(compound){
         "  \treturn union(tables: [spring,summer,autumn,winter])\n" +
         "    \n" +
         "}\n\n" +
-        "getMeanForSeason(year:\"2017\",endYear:\"2018\")";
+        "getMeanForSeason(year:\"2016\",endYear:\"2017\")";
 
     return {
         "compound" : compound,
@@ -152,7 +129,6 @@ exports.handler = function (event, context, callback) {
     // An object of options to indicate where to post to
     var post_options = {
         host: process.env.INFLUXURL,
-        //host: "18.194.247.68",
         port: '8086',
         path: '/api/v2/query',
         method: 'POST',
@@ -163,17 +139,6 @@ exports.handler = function (event, context, callback) {
     };
 
     var queriesObjects = compounds.map(c => createQueryObject(c));
-
-    /*
-    var responses = queriesObjects.map((s) => {
-
-        post_options.body = s.query;
-        query1(post_options,context, (chunk) => {
-            console.log(chunk);
-            return {"compound":s.compound, "result":chunk}}
-        )
-    });
-    */
 
     async.parallel([
         function(callback) {
@@ -230,4 +195,5 @@ exports.handler = function (event, context, callback) {
         console.log("async.parallel completed with "+ JSON.stringify(result));
         writeOnRedis(event,"query_1",result, callback);
     });
+
 };
