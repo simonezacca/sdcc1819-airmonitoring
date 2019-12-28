@@ -231,6 +231,8 @@ services:
         ports:
             - "3456:3456"  # remote intellij debug
         command: bash
+        stdin_open: true
+        tty: true
         environment:
             - LOCAL_FORWARD_PORT=3456
             - ELASTICACHE_REMOTE_HOST=elasticache-influxdb.kzez0j.0001.euc1.cache.amazonaws.com
