@@ -101,28 +101,29 @@ Resources:
       SubnetId: !Ref PublicSubnetTwo
       RouteTableId: !Ref PublicRouteTable
 
-  #ElasticacheSecurityGroup:
-  #  Type: 'AWS::EC2::SecurityGroup'
-  #  Properties:
-  #    GroupDescription: Elasticache Security Group
-  #    SecurityGroupIngress:
-  #      - IpProtocol: tcp
-  #        FromPort: '11211'
-  #        ToPort: '11211'
-  #        SourceSecurityGroupName: !Ref InstanceSecurityGroup
+  ElasticacheSubnetGroup:
+    Type: AWS::ElastiCache::SubnetGroup
+    Properties:
+      Description: Cache Subnet Group
+      SubnetIds:
+        - !Ref PublicSubnetOne
+        - !Ref PublicSubnetTwo
 
   ElasticacheCluster:
     Type: 'AWS::ElastiCache::CacheCluster'
     Properties:
-      ClusterName: 'air-monitoring-cache'
+      ClusterName: 'elasticache-influxdb'
       AutoMinorVersionUpgrade: 'true'
       Engine: redis
+      EngineVersion: '5.0.6'
+      Port: 6379
+      CacheParameterGroupName: 'default.redis5.0'
       CacheNodeType: cache.t2.micro
       NumCacheNodes: '1'
+      CacheSubnetGroupName: !Ref ElasticacheSubnetGroup
       VpcSecurityGroupIds:
-        - !GetAtt
-          - EcsHostSecurityGroup
-      #    - GroupId
+        - !GetAtt EcsHostSecurityGroup.GroupId
+
 
   EC2Instance:
     Type: AWS::EC2::Instance

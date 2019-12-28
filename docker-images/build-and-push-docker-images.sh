@@ -8,7 +8,7 @@ PS3='Choose the Docker image that you want to update: '
 path=$(pwd)
 print_menu() {
 options=("Zookeeper" "Kafka" "Kafka-producer" "Influxdb" "Telegraf" "Chronograf" 
-    "Flink-jobmanager" "All images" "Quit")
+    "Flink-jobmanager" "Elasticache-proxy" "All images" "Quit")
 
 }
 
@@ -58,6 +58,12 @@ do
         "Flink-jobmanager")
             echo "you choose to update Flink-jobmanager image"
             cd $path/Flink-jobmanager
+            bash './docker-image-update.sh'
+            cd ..
+            ;;
+        "Elasticache-proxy")
+            echo "you choose to update Elasticache-proxy image"
+            cd $path/Elasticache-proxy
             bash './docker-image-update.sh'
             cd ..
             ;;
