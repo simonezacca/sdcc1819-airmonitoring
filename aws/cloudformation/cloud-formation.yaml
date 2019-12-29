@@ -16,6 +16,15 @@ Parameters:
     Type: AWS::EC2::Volume::Id
     ConstraintDescription: Please choose a valid EBS volume for InfluxDb data
 
+  DesiredCapacity:
+    Type: Number
+    Default: '1'
+    Description: Number of EC2 instances to launch in your ECS cluster.
+  MaxSize:
+    Type: Number
+    Default: '1'
+    Description: Maximum number of EC2 instances that can be launched in your ECS cluster.
+
 Mappings:
   # Hard values for the subnet masks. These masks define
   # the range of internal IP addresses that can be assigned.
@@ -101,6 +110,8 @@ Resources:
       SubnetId: !Ref PublicSubnetTwo
       RouteTableId: !Ref PublicRouteTable
 
+# Elasticache Redis cluster
+
   ElasticacheSubnetGroup:
     Type: AWS::ElastiCache::SubnetGroup
     Properties:
@@ -125,31 +136,32 @@ Resources:
         - !GetAtt EcsHostSecurityGroup.GroupId
 
 
-  EC2Instance:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ami-01933d3dbcb8f63e0
-      KeyName: !Ref MyKey
-      SecurityGroupIds: [!Ref EcsHostSecurityGroup]
-      InstanceType: !Ref InstanceType
-      IamInstanceProfile: !Ref EC2InstanceProfile
-      SubnetId: !Ref PublicSubnetOne
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash -xe
-          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
-          yum install -y aws-cfn-bootstrap
-          mkdir /mnt/Influxdb-volume
-          sleep 60
-          mount /dev/xvdf /mnt/Influxdb-volume
-          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --region ${AWS::Region}
-
-  InfluxDbVolumeAttach:
-    Type: AWS::EC2::VolumeAttachment
-    Properties:
-      Device: /dev/xvdf
-      InstanceId: !Ref EC2Instance
-      VolumeId: !Ref InfluxDbVolume
+  #EC2Instance:
+  #  Type: AWS::EC2::Instance
+  #  Properties:
+  #    ImageId: ami-01933d3dbcb8f63e0
+  #    KeyName: !Ref MyKey
+  #    SecurityGroupIds: [!Ref EcsHostSecurityGroup]
+  #    InstanceType: !Ref InstanceType
+  #    IamInstanceProfile: !Ref EC2InstanceProfile
+  #    SubnetId: !Ref PublicSubnetOne
+  #    UserData:
+  #      Fn::Base64: !Sub |
+  #        #!/bin/bash -xe
+  #        echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+  #        yum install -y aws-cfn-bootstrap
+  #        mkdir /mnt/Influxdb-volume
+  #        mount /dev/xvdf /mnt/Influxdb-volume
+  #        /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --region ${AWS::Region}
+  #  DependsOn:
+  #    - InfluxDbVolumeAttach
+#
+  #InfluxDbVolumeAttach:
+  #  Type: AWS::EC2::VolumeAttachment
+  #  Properties:
+  #    Device: /dev/xvdf
+  #    InstanceId: !Ref EC2Instance
+  #    VolumeId: !Ref InfluxDbVolume
 
   # ECS Resources
   ECSCluster:
@@ -194,56 +206,59 @@ Resources:
 
   # Autoscaling group. This launches the actual EC2 instances that will register
   # themselves as members of the cluster, and run the docker containers.
-  #ECSAutoScalingGroup:
-  #  Type: AWS::AutoScaling::AutoScalingGroup
-  #  Properties:
-  #    VPCZoneIdentifier:
-  #      - !Ref PublicSubnetOne
-  #      - !Ref PublicSubnetTwo
-  #    LaunchConfigurationName: !Ref 'ContainerInstances'
-  #    MinSize: '1'
-  #    MaxSize: '1'
-  #  CreationPolicy:
-  #    ResourceSignal:
-  #      Timeout: PT15M
-  #  UpdatePolicy:
-  #    AutoScalingReplacingUpdate:
-  #      WillReplace: 'true'
-  #ContainerInstances:
-  #  Type: AWS::AutoScaling::LaunchConfiguration
-  #  Properties:
-  #    ImageId: ami-01933d3dbcb8f63e0
-  #    SecurityGroups: [!Ref 'EcsHostSecurityGroup']
-  #    InstanceType: !Ref 'InstanceType'
-  #    IamInstanceProfile: !Ref 'EC2InstanceProfile'
-  #    UserData:
-  #      Fn::Base64: !Sub |
-  #        #!/bin/bash -xe
-  #        echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
-  #        yum install -y aws-cfn-bootstrap
-  #        /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
-  #AutoscalingRole:
-  #  Type: AWS::IAM::Role
-  #  Properties:
-  #    AssumeRolePolicyDocument:
-  #      Statement:
-  #      - Effect: Allow
-  #        Principal:
-  #          Service: [application-autoscaling.amazonaws.com]
-  #        Action: ['sts:AssumeRole']
-  #    Path: /
-  #    Policies:
-  #    - PolicyName: service-autoscaling
-  #      PolicyDocument:
-  #        Statement:
-  #        - Effect: Allow
-  #          Action:
-  #            - 'application-autoscaling:*'
-  #            - 'cloudwatch:DescribeAlarms'
-  #            - 'cloudwatch:PutMetricAlarm'
-  #            - 'ecs:DescribeServices'
-  #            - 'ecs:UpdateService'
-  #          Resource: '*'
+  ECSAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        - !Ref PublicSubnetOne
+        - !Ref PublicSubnetTwo
+      LaunchConfigurationName: !Ref 'ContainerInstances'
+      MinSize: '1'
+      MaxSize: !Ref 'MaxSize'
+      DesiredCapacity: !Ref 'DesiredCapacity'
+      LoadBalancerNames: [!Ref PublicLoadBalancer]
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT15M
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: 'true'
+  ContainerInstances:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: ami-01933d3dbcb8f63e0
+      KeyName: !Ref MyKey
+      SecurityGroups: [!Ref 'EcsHostSecurityGroup']
+      InstanceType: !Ref 'InstanceType'
+      IamInstanceProfile: !Ref 'EC2InstanceProfile'
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          yum install -y aws-cfn-bootstrap
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+  AutoscalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [application-autoscaling.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+      - PolicyName: service-autoscaling
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+              - 'application-autoscaling:*'
+              - 'cloudwatch:DescribeAlarms'
+              - 'cloudwatch:PutMetricAlarm'
+              - 'ecs:DescribeServices'
+              - 'ecs:UpdateService'
+            Resource: '*'
   EC2InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -302,44 +317,47 @@ Resources:
           - CidrIp: 0.0.0.0/0
             IpProtocol: -1
   PublicLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
+      SecurityGroups: [!Ref 'PublicLoadBalancerSG']
       Scheme: internet-facing
-      LoadBalancerAttributes:
-      - Key: idle_timeout.timeout_seconds
-        Value: '30'
       Subnets:
         # The load balancer is placed into the public subnets, so that traffic
         # from the internet can reach the load balancer directly via the internet gateway
         - !Ref PublicSubnetOne
         - !Ref PublicSubnetTwo
-      SecurityGroups: [!Ref 'PublicLoadBalancerSG']
-  # A dummy target group is used to setup the ALB to just drop traffic
-  # initially, before any real service target groups have been added.
-  DummyTargetGroupPublic:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckIntervalSeconds: 6
-      HealthCheckPath: /
-      HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
-      Name: !Join ['-', [!Ref 'AWS::StackName', 'drop-1']]
-      Port: 80
-      Protocol: HTTP
-      UnhealthyThresholdCount: 2
-      VpcId: !Ref 'VPC'
-  PublicLoadBalancerListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    DependsOn:
-      - PublicLoadBalancer
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref 'DummyTargetGroupPublic'
-          Type: 'forward'
-      LoadBalancerArn: !Ref 'PublicLoadBalancer'
-      Port: 80
-      Protocol: HTTP
+      HealthCheck:
+        HealthyThreshold: '2'
+        Interval: '10'
+        Target: 'TCP:22'
+        Timeout: '5'
+        UnhealthyThreshold: '2'  
+      Listeners: 
+        # SSH
+        - LoadBalancerPort: 22
+          Protocol: TCP
+          InstancePort: 22
+          InstanceProtocol: TCP
+        # Elasticache public proxy
+        - LoadBalancerPort: 3456
+          Protocol: TCP
+          InstancePort: 3456
+          InstanceProtocol: TCP
+        # Chronograf Dashboard
+        - LoadBalancerPort: 8888
+          Protocol: HTTP
+          InstancePort: 8888
+          InstanceProtocol: HTTP
+        # InfluxAPI Rest
+        - LoadBalancerPort: 8086
+          Protocol: HTTP
+          InstancePort: 8086
+          InstanceProtocol: HTTP
+        # Flink Dashboard
+        - LoadBalancerPort: 8081
+          Protocol: HTTP
+          InstancePort: 8081
+          InstanceProtocol: HTTP
 
   # This is an IAM role which authorizes ECS to manage resources on your
   # account on your behalf, such as updating your load balancer with the
@@ -399,11 +417,6 @@ Outputs:
     Value: !GetAtt 'ECSRole.Arn'
     Export:
       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'ECSRole' ] ]
-  PublicListener:
-    Description: The ARN of the public load balancer's Listener
-    Value: !Ref PublicLoadBalancerListener
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PublicListener' ] ]
   VPCId:
     Description: The ID of the VPC that this stack is deployed in
     Value: !Ref 'VPC'
