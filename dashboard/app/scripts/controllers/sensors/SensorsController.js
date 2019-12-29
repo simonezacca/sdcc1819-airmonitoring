@@ -12,10 +12,39 @@ mainAngularModule
         function ($scope, SensorsFactory ,ErrorStateRedirector, DTOptionsBuilder, DTColumnDefBuilder) {
 
             var ctrl = this;
+            resetFieldsFn();
+            ctrl.resetFields = resetFieldsFn;
             ctrl.createSensor = createSensorFn;
             ctrl.refreshSensor = refreshSensorFn;
             ctrl.editSensor = editSensorFN;
             ctrl.deleteSensor = deleteSensorFn;
+
+            ctrl.currentSensor = {};
+            /*
+            ctrl.currentSensor = {
+                "sensor_id": {
+                    "S": "28079515"
+                },
+                "SO_2": {
+                    "BOOL": true
+                },
+                "NO_2": {
+                    "BOOL": true
+                },
+                "lon": {
+                    "S": "-3.712"
+                },
+                "lat": {
+                    "S": "40.42385"
+                },
+                "CO": {
+                    "BOOL": true
+                },
+                "PM10": {
+                    "BOOL": false
+                }
+            };
+             */
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withDOM('C<"clear">lfrtip');
             $scope.dtColumnDefs = [
@@ -24,15 +53,20 @@ mainAngularModule
 
 
             //refreshSensorFn();
-
+            function resetFieldsFn() {
+                ctrl.currentSensor = {};
+            }
             function createSensorFn() {
                 console.log("Create Sensor\n");
-                SensorsFactory.Insert(
-                    function (sensors) {
-                        ctrl.sensors = sensors;
+                SensorsFactory.Insert(ctrl.currentSensor,
+                    function (response) {
+                        console.log(response);
+                        //$state.go('sensors.info', {}, {reload: true});
                     }, function (error) {
                         ErrorStateRedirector.GoToErrorPage({Messaggio: "Error during creation of Sensor:" + error});
                     });
+                resetFieldsFn();
+
 
             }
             function refreshSensorFn() {

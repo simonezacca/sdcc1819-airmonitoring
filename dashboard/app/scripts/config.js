@@ -14,7 +14,7 @@ mainAngularModule.config(function Config($httpProvider, jwtOptionsProvider, AclS
     });
 
     $httpProvider.interceptors.push('jwtInterceptor');
-    $httpProvider.defaults.headers.common = {"Content-Type": "application/json"};
+    //$httpProvider.defaults.headers.common = {"Content-Type": "application/json"};
 
     AclServiceProvider.resume();
     angular.extend(toastrConfig,{

@@ -49,6 +49,10 @@ mainAngularModule
                                     {
                                         "nome": "Sensors",
                                         "state": "sensors.info"
+                                    },
+                                    {
+                                        "nome": "Add Sensor",
+                                        "state": "sensors.create"
                                     }
                                 ]
                             },

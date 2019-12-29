@@ -25,22 +25,14 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="p in ctrl.products">
-                                <td>{{p.id}}</td>
-                                <td>{{p.product_name}}</td>
-                                <td>{{p.description}}</td>
-                                <td>{{p.version}}</td>
-                                <td align="right">
-                                    <button class="btn btn-primary" ng-disabled="!hasPermission('software_permission')"
-                                            ui-sref="permissions.product({objectType: 'product', productId: p.id})"
-                                            title="Permessi"><i class="fa fa-lock"></i></button>
-                                    <button class="btn btn-warning" ng-disabled="!hasPermission('software_update')"
-                                            ui-sref="productsoftware.edit({spId: p.id})"
-                                            title="Modifica"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" ng-disabled="!hasPermission('software_delete')"
-                                            ng-click="ctrl.deleteProduct(p.id)" title="Elimina">
-                                        <i class="fa fa-trash"></i></button>
-                                </td>
+                            <tr ng-repeat="s in ctrl.sensors">
+                                <td>{{s.id}}</td>
+                                <td>{{s.CO}}</td>
+                                <td>{{s.NO_2}}</td>
+                                <td>{{s.PM10}}</td>
+                                <td>{{s.SO_2}}</td>
+                                <td>{{s.lat}}</td>
+                                <td>{{s.lon}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -52,7 +44,7 @@
             <!-- /.panel -->
         </div>
         <div class="row">
-            <button class="btn btn-success" ui-sref="productsoftware.create" >Add Sensor</button>
+            <button class="btn btn-success" ui-sref="sensors.create" >Add Sensor</button>
             <button class="btn btn-warning" ng-click="ctrl.refreshProduct()">Update Sensor</button>
             <button class="btn btn-danger" ng-click="ctrl.refreshProduct()">Delete Sensor</button>
         </div>

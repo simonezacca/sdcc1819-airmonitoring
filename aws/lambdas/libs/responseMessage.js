@@ -10,7 +10,7 @@ function createErrorResponseFn(statusCode, message, encoding) {
 function createSuccessResponseFn(statusCode, result) {
     var response = {
         'statusCode': statusCode,
-        'headers' : {'Access-Control-Allow-Origin' : '*'},
+        'headers' : {'Access-Control-Allow-Origin' : '*','Access-Control-Allow-Headers' : '*'},
         'body' : JSON.stringify(result)
     }
     return response;

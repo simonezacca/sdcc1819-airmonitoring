@@ -9,11 +9,11 @@
  */
 
 mainAngularModule
-    .factory('SensorsFactory', ['$http', 'BACKEND_BASE_URL', 'USER_ENDPOINT_URL', 'ToasterNotifierHandler',
-        function ($http, BACKEND_BASE_URL, USER_ENDPOINT_URL, ToasterNotifierHandler) {
+    .factory('SensorsFactory', ['$http', 'APIGATEWAY_ENDPOINT_URL', 'ToasterNotifierHandler',
+        function ($http, APIGATEWAY_ENDPOINT_URL, ToasterNotifierHandler) {
             let thisCrudService = {};
             thisCrudService.sensors = {};
-            let _endPointJSON = BACKEND_BASE_URL + USER_ENDPOINT_URL;
+            let _endPointAPIGATEWAY = APIGATEWAY_ENDPOINT_URL;
 
 
             thisCrudService.GetAll = GetAllFn;
@@ -29,7 +29,7 @@ mainAngularModule
 
                 $http({
                     method: 'GET',
-                    url: _endPointJSON
+                    url: _endPointAPIGATEWAY
                 })
                     .then(function (response) {
                             if (successCB) {
@@ -46,11 +46,11 @@ mainAngularModule
                         });
             }
 
-            function GetSingleFn(id, successCB, errorCB) {
+            function GetSingleFn(sensor_id, successCB, errorCB) {
 
                 $http({
                     method: 'GET',
-                    url: _endPointJSON + id
+                    url: _endPointAPIGATEWAY + sensor_id
                 })
                     .then(function (response) {
                             if (successCB) {
@@ -72,7 +72,10 @@ mainAngularModule
 
                 $http({
                     method: 'POST',
-                    url: _endPointJSON,
+                    url: _endPointAPIGATEWAY,
+                    headers: {
+                        "Access-Control-Allow-Origin" : "*"
+                    },
                     data: sensor
                 })
                     .then(function (response) {
@@ -96,7 +99,7 @@ mainAngularModule
 
                 $http({
                     method: 'PUT',
-                    url: _endPointJSON + sensor.id,
+                    url: _endPointAPIGATEWAY + sensor.id,
                     data: sensor
                 })
                     .then(function (response) {
@@ -115,11 +118,11 @@ mainAngularModule
             }
 
             // delete the data from database
-            function RemoveFn(sensorId, successCB, errorCB) {
+            function RemoveFn(sensor_id, successCB, errorCB) {
 
                 $http({
                     method: 'DELETE',
-                    url: _endPointJSON + sensorId
+                    url: _endPointAPIGATEWAY + sensor_id
                 })
                     .then(function (response) {
                             if (successCB) {

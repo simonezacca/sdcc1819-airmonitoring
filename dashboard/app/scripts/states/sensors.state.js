@@ -8,9 +8,12 @@ mainAngularModule.config(['$stateProvider',
                 abstract: true,
                 url: '/sensors',
                 templateUrl: 'views/dashboard/main.html'
-                /*data: {
-                    requiresLogin: true
-                }*/
+            })
+            .state('sensors.create', {
+                url: '/create',
+                templateUrl: 'views/sensors/sensor-create.html',
+                controller: 'SensorsController',
+                controllerAs: 'ctrl',
             })
             .state('sensors.info', {
                 url: '/info',

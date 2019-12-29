@@ -28,7 +28,7 @@ out
 
 .project
 .settings
-
+˛
 # !docker-images/flink/external_jar_lib/*.jar
 
 dependency-reduced-pom.xml
