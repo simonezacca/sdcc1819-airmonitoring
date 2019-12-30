@@ -6,6 +6,7 @@
     "url": "https://github.com/simonezacca/sdcc1819-airmonitoring/dashboard"
   },
   "dependencies": {
+    "angular-chart.js": "^1.1.1",
     "angular-datatables": "^0.6.2",
     "angular-ui-notification": "^0.3.6"
   },

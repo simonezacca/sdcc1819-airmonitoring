@@ -50,7 +50,7 @@ mainAngularModule
 
                 $http({
                     method: 'GET',
-                    url: _endPointAPIGATEWAY + sensor_id
+                    url: _endPointAPIGATEWAY + "/" + sensor_id
                 })
                     .then(function (response) {
                             if (successCB) {

@@ -12,5 +12,6 @@ var mainAngularModule = angular
         'swxSessionStorage',
         'mm.acl',
         'ngWebsocket',
-        'toastr'
+        'toastr',
+        'chart.js'
     ]);

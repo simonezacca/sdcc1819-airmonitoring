@@ -25,6 +25,8 @@ mainAngularModule
     .constant('AUDITING_ENDPOINT_URL', '/auditing-logs/')
     .constant('APIGATEWAY_SENSORS_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/sensors')
     .constant('APIGATEWAY_ALARMS_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/alarms')
+    .constant('APIGATEWAY_INFLUXQUERY1_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/influxquery1')
+    .constant('APIGATEWAY_INFLUXQUERY2_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/influxquery2')
     .constant('WEBSOCKET_ALARM_ENDPOINT_URL', 'wss://p7s6xjwg04.execute-api.eu-central-1.amazonaws.com/dev')
 
 

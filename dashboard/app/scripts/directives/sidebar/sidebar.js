@@ -36,7 +36,16 @@ mainAngularModule
                                 "title": "Batch",
                                 "num": 2,
                                 "icon": "fa-cogs",
-                                "state": "batch.info"
+                                item:[
+                                    {
+                                        "nome": "Query1",
+                                        "state": "batch.query1"
+                                    },
+                                    {
+                                        "nome": "Query2",
+                                        "state": "batch.query2"
+                                    }
+                                ]
                             },
                             {
                                 "title": "Sensors",
