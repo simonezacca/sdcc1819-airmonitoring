@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
-  MyKey: 
+  MyKey:
     Type: AWS::EC2::KeyPair::KeyName
     Description: "EC2 key pair"
   InstanceType:
@@ -11,21 +11,41 @@ Parameters:
     AllowedValues: [t2.micro, t2.small, t2.medium, t2.large]
     ConstraintDescription: Please choose a valid instance type.
 
-  InfluxDbVolume:
-    Description: EBS volume for InfluxDb data
-    Type: AWS::EC2::Volume::Id
-    ConstraintDescription: Please choose a valid EBS volume for InfluxDb data
+  #InfluxDbVolume:
+  #  Description: EBS volume for InfluxDb data
+  #  Type: AWS::EC2::Volume::Id
+  #  ConstraintDescription: Please choose a valid EBS volume for InfluxDb data
+
+  VPC:
+    Description: The VPC used for creating the resources
+    Type: AWS::EC2::VPC::Id
+    ConstraintDescription: Please choose a valid VPC
+
+  PublicSubnetOne:
+    Description: First subnet attached in VPC in AZ
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: Please choose a valid Subnet
+
+  PublicSubnetTwo:
+    Description: Second subnet attached in VPC in AZ
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: Please choose a valid Subnet
+  
+  EfsDnsName:
+    Type: String
+    ConstraintDescription: Please choose a valid EFS DNS name
 
   DesiredCapacity:
     Type: Number
     Default: '1'
     Description: Number of EC2 instances to launch in your ECS cluster.
+  
   MaxSize:
     Type: Number
     Default: '1'
     Description: Maximum number of EC2 instances that can be launched in your ECS cluster.
 
-Mappings:
+#Mappings:
   # Hard values for the subnet masks. These masks define
   # the range of internal IP addresses that can be assigned.
   # The VPC can have all IP's from 10.0.0.0 to 10.0.255.255
@@ -37,46 +57,46 @@ Mappings:
   # If you need more IP addresses (perhaps you have so many
   # instances that you run out) then you can customize these
   # ranges to add more
-  SubnetConfig:
-    VPC:
-      CIDR: '10.0.0.0/16'
-    PublicOne:
-      CIDR: '10.0.0.0/24'
-    PublicTwo:
-      CIDR: '10.0.1.0/24'
+  #SubnetConfig:
+  #  VPC:
+  #    CIDR: '10.0.0.0/16'
+  #  PublicOne:
+  #    CIDR: '10.0.0.0/24'
+  #  PublicTwo:
+  #    CIDR: '10.0.1.0/24'
 Resources:
   # VPC in which containers will be networked.
   # It has two public subnets
   # We distribute the subnets across the first two available subnets
   # for the region, for high availability.
-  VPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-      CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+  #VPC:
+  #  Type: AWS::EC2::VPC
+  #  Properties:
+  #    EnableDnsSupport: true
+  #    EnableDnsHostnames: true
+  #    CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
 
   # Two public subnets, where containers can have public IP addresses
-  PublicSubnetOne:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone:
-         Fn::Select:
-         - 0
-         - Fn::GetAZs: {Ref: 'AWS::Region'}
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'PublicOne', 'CIDR']
-      MapPublicIpOnLaunch: true
-  PublicSubnetTwo:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone:
-         Fn::Select:
-         - 1
-         - Fn::GetAZs: {Ref: 'AWS::Region'}
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'PublicTwo', 'CIDR']
-      MapPublicIpOnLaunch: true
+  #PublicSubnetOne:
+  #  Type: AWS::EC2::Subnet
+  #  Properties:
+  #    AvailabilityZone:
+  #       Fn::Select:
+  #       - 0
+  #       - Fn::GetAZs: {Ref: 'AWS::Region'}
+  #    VpcId: !Ref 'VPC'
+  #    CidrBlock: !FindInMap ['SubnetConfig', 'PublicOne', 'CIDR']
+  #    MapPublicIpOnLaunch: true
+  #PublicSubnetTwo:
+  #  Type: AWS::EC2::Subnet
+  #  Properties:
+  #    AvailabilityZone:
+  #       Fn::Select:
+  #       - 1
+  #       - Fn::GetAZs: {Ref: 'AWS::Region'}
+  #    VpcId: !Ref 'VPC'
+  #    CidrBlock: !FindInMap ['SubnetConfig', 'PublicTwo', 'CIDR']
+  #    MapPublicIpOnLaunch: true
 
   # Setup networking resources for the public subnets. Containers
   # in the public subnets have public IP addresses and the routing table
@@ -135,7 +155,12 @@ Resources:
       VpcSecurityGroupIds:
         - !GetAtt EcsHostSecurityGroup.GroupId
 
-
+# Marker Security Group to allow the EC2 instances to connect to EFS
+  EFSClientSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'EFS Mount target client' 
+      VpcId: !Ref VPC
   #EC2Instance:
   #  Type: AWS::EC2::Instance
   #  Properties:
@@ -228,14 +253,21 @@ Resources:
     Properties:
       ImageId: ami-01933d3dbcb8f63e0
       KeyName: !Ref MyKey
-      SecurityGroups: [!Ref 'EcsHostSecurityGroup']
+      SecurityGroups: 
+        - !Ref 'EcsHostSecurityGroup'
+        - !Ref 'EFSClientSecurityGroup'
       InstanceType: !Ref 'InstanceType'
       IamInstanceProfile: !Ref 'EC2InstanceProfile'
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
           echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
-          yum install -y aws-cfn-bootstrap
+          sudo yum install -y aws-cfn-bootstrap nc nfs-utils
+          while ! nc -z ${EfsDnsName} 2049;
+          do sleep 10; done
+          sleep 10
+          sudo mkdir /mnt/sdcc-airmonitoring-data
+          sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 ${EfsDnsName}:/ /mnt/sdcc-airmonitoring-data
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
   AutoscalingRole:
     Type: AWS::IAM::Role
@@ -318,6 +350,8 @@ Resources:
             IpProtocol: -1
   PublicLoadBalancer:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
+    DependsOn:
+      - GatewayAttachement
     Properties:
       SecurityGroups: [!Ref 'PublicLoadBalancerSG']
       Scheme: internet-facing

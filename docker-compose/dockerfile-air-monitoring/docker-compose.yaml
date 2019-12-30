@@ -89,7 +89,7 @@ services:
         mem_limit: 3G
         mem_reservation: 1G
         volumes:
-            - "/mnt/Influxdb-volume:/var/lib/influxdb"
+            - "/mnt/sdcc-airmonitoring-data/influxdb:/var/lib/influxdb"
         logging: 
             driver: awslogs
             options:

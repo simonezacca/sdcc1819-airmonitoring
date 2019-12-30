@@ -1,0 +1,97 @@
+#   ------- INIZIO NUOVI PARAMETRI DEL CLOUDFORMATION ------- 
+#   
+#   vpc-sdcc-air-monitorig
+#   VPCID:	vpc-0b0df5ca399e820ea
+#   
+#   subnet1-sdcc-air-monitoring
+#   SUBID:	subnet-0865e582f3f19e78e
+#   
+#   subnet2-sdcc-air-monitoring
+#   SUBID:	subnet-0f978451055cbfa0b
+#   
+#   Elastic File System
+#   EFSID:	fs-c276849a
+#   nome DNS:	fs-c276849a.efs.eu-central-1.amazonaws.com
+#   
+
+aws cloudformation create-stack --stack-name sdcc-air-monitoring --template-body file://cloud-formation.yaml \
+--parameters ParameterKey=MyKey,ParameterValue=sdcc-ec2-instance-key ParameterKey=InstanceType,ParameterValue=t2.large \
+ParameterKey=VPC,ParameterValue=vpc-0b0df5ca399e820ea \
+ParameterKey=PublicSubnetOne,ParameterValue=subnet-0865e582f3f19e78e \
+ParameterKey=PublicSubnetTwo,ParameterValue=subnet-0f978451055cbfa0b \
+ParameterKey=EfsDnsName,ParameterValue=fs-c276849a.efs.eu-central-1.amazonaws.com \
+ --capabilities CAPABILITY_IAM
+
+
+#   ------- FINE NUOVI PARAMETRI DEL CLOUDFORMATION ------- 
+#   
+#   NOTE:
+#   creare 2 security group:
+#   - inbound verso il mount target, deve abilitare il traffico proveniente dalle istanze ec2 verso la porta 2049
+#   - outboud dalle macchine ec2 per autorizzare il traffico verso la porta 2049 del mounttarget
+
+Resources:
+    [...]
+    # The client security group needs no rules. It’s just used to mark traffic.
+    EFSClientSecurityGroup:
+        Type: 'AWS::EC2::SecurityGroup'
+        Properties:
+            GroupDescription: 'EFS Mount target client' 
+            VpcId: !Ref VPC
+    MountTargetSecurityGroup:
+        Type: 'AWS::EC2::SecurityGroup'
+        Properties:
+            GroupDescription: 'EFS Mount target'
+            # Allow traffic on port 2049.
+            SecurityGroupIngress:
+                - FromPort: 2049
+                IpProtocol: tcp
+                # Only allow traffic from the client security group.
+                SourceSecurityGroupId: !Ref EFSClientSecurityGroup
+    MountTargetA:
+        Type: 'AWS::EFS::MountTarget'
+        Properties:
+            # Connect mount target with the filesystem.
+            FileSystemId: !Ref FileSystem
+            SecurityGroups:
+                # Assign the security group.
+                - !Ref MountTargetSecurityGroup
+            # Connect with a subnet which also determines the AZ.
+            SubnetId: !Ref SubnetA
+    MountTargetB:
+        Type: 'AWS::EFS::MountTarget'
+        Properties:
+            FileSystemId: !Ref FileSystem
+            SecurityGroups:
+                - !Ref MountTargetSecurityGroup
+            # The other subnet is used.
+            SubnetId: !Ref SubnetB    
+                                                                                    # fs-c276849a.efs.eu-central-1.amazonaws.com  /mnt/sdcc-airmonitoring-data
+# $> mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600, retrans=2 $FileSystemID.efs.$Region.amazonaws.com:/ $EFSMountPoint
+
+# You can also use the /ets/fstab file to automatically mount on startup:
+# echo '$FileSystemID.efs.$Region.amazonaws.com:/ $EFSMountPoint nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,_netdev 0 0' >> /etc/fstab
+
+# To make sure that the DNS name can be resolved and the other side is listening to the
+#port, you can use the following Bash script to wait until the mount target is ready:
+# In AWS::EC2::LaunchConfiguration
+
+SecurityGroups:
+    - !Ref EFSClientSecurityGroup
+
+UserData:
+  'Fn::Base64': !Sub |
+    #!/bin/bash -x
+    bash -ex << "TRY"
+    while ! nc -z ${FileSystem}.efs.${AWS::Region}.amazonaws.com 2049;
+    do sleep 10; done
+    sleep 10
+    mkdir /mnt/sdcc-airmonitoring-data
+    echo 'fs-c276849a.efs.eu-central-1.amazonaws.com:/ /mnt/sdcc-airmonitoring-data nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,_netdev 0 0' >> /etc/fstab
+    mount -a
+    TRY
+    /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName}
+    --resource EC2InstanceA --region ${AWS::Region}
+DependsOn:
+    # Wait for the mount target.
+    - MountTargetA
