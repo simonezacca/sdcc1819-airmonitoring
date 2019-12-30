@@ -9,11 +9,11 @@
  */
 
 mainAngularModule
-    .factory('SensorsFactory', ['$http', 'APIGATEWAY_ENDPOINT_URL', 'ToasterNotifierHandler',
-        function ($http, APIGATEWAY_ENDPOINT_URL, ToasterNotifierHandler) {
+    .factory('SensorsFactory', ['$http', 'APIGATEWAY_SENSORS_ENDPOINT_URL', 'ToasterNotifierHandler',
+        function ($http, APIGATEWAY_SENSORS_ENDPOINT_URL, ToasterNotifierHandler) {
             let thisCrudService = {};
             thisCrudService.sensors = {};
-            let _endPointAPIGATEWAY = APIGATEWAY_ENDPOINT_URL;
+            let _endPointAPIGATEWAY = APIGATEWAY_SENSORS_ENDPOINT_URL;
 
 
             thisCrudService.GetAll = GetAllFn;
@@ -32,10 +32,10 @@ mainAngularModule
                     url: _endPointAPIGATEWAY
                 })
                     .then(function (response) {
+                            console.log(response.data);
                             if (successCB) {
                                 successCB(response.data);
                             }
-                            //return response.data;
                         },
                         function (response) {
                             if (errorCB) {
@@ -122,7 +122,7 @@ mainAngularModule
 
                 $http({
                     method: 'DELETE',
-                    url: _endPointAPIGATEWAY + sensor_id
+                    url: _endPointAPIGATEWAY + "/" + sensor_id
                 })
                     .then(function (response) {
                             if (successCB) {

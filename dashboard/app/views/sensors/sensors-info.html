@@ -20,19 +20,25 @@
                                 <th class="col-md-1">NO_2</th>
                                 <th class="col-md-1">PM10</th>
                                 <th class="col-md-1">SO_2</th>
-                                <th class="col-md-3">LAT</th>
-                                <th class="col-md-3">LON</th>
+                                <th class="col-md-2">LAT</th>
+                                <th class="col-md-2">LON</th>
+                                <th class="col-md-2"></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="s in ctrl.sensors">
-                                <td>{{s.id}}</td>
-                                <td>{{s.CO}}</td>
-                                <td>{{s.NO_2}}</td>
-                                <td>{{s.PM10}}</td>
-                                <td>{{s.SO_2}}</td>
-                                <td>{{s.lat}}</td>
-                                <td>{{s.lon}}</td>
+                                <td>{{s.sensor_id.S}}</td>
+                                <td>{{s.CO.BOOL}}</td>
+                                <td>{{s.NO_2.BOOL}}</td>
+                                <td>{{s.PM10.BOOL}}</td>
+                                <td>{{s.SO_2.BOOL}}</td>
+                                <td>{{s.lat.S}}</td>
+                                <td>{{s.lon.S   }}</td>
+                                <td align="right">
+                                    <button class="btn btn-danger"
+                                            ng-click="ctrl.deleteSensor(s.sensor_id.S)" title="Delete">
+                                        <i class="fa fa-trash"></i></button>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -45,8 +51,6 @@
         </div>
         <div class="row">
             <button class="btn btn-success" ui-sref="sensors.create" >Add Sensor</button>
-            <button class="btn btn-warning" ng-click="ctrl.refreshProduct()">Update Sensor</button>
-            <button class="btn btn-danger" ng-click="ctrl.refreshProduct()">Delete Sensor</button>
         </div>
     </div>
 </div>

@@ -1,0 +1,31 @@
+'use strict';
+var AWS = require('aws-sdk');
+var dynamoDB = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+var tableName = "alarm";
+
+const msgLibs = require('./libs/responseMessage.js');
+
+function readAll(cb) {
+    var params = {
+        TableName: tableName,
+    };
+    dynamoDB.scan(params, function (err, data) {
+        if (err) {
+            console.log("Error", err);
+        } else {
+            console.log("Success", data.Items);
+            cb(data.Items);
+        }
+    });
+}
+
+exports.handler = function(event, context, callback) {
+    console.log(event);
+    var httpMethod = event.httpMethod;
+
+    if (httpMethod === "GET") {
+        console.log("ReadAllAlarms");
+        readAll((items) => {callback(null, msgLibs.createSuccessResponse(200, items))});
+    }
+    console.log("Received event: ", event.body);
+};

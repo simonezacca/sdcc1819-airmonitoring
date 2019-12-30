@@ -39,21 +39,31 @@
                         </form>
                     </div>
                     <div class="row">
-                        <form name="formCreateSensor" role="form">
-                            <input type="checkbox" ng-checked="check1"
+                        <div class="col-md-4">
+                        <label class="checkbox-inline">
+                                <input type="checkbox" ng-checked="check1"
                                    ng-model="ctrl.currentSensor.CO.BOOL" /><b>CO</b><br>
-                            <input type="checkbox" ng-checked="check2"
+                            </label>
+                        <label class="checkbox-inline">
+                        <input type="checkbox" ng-checked="check2"
                                    ng-model="ctrl.currentSensor.NO_2.BOOL" /><b>NO_2</b><br>
-                            <input type="checkbox" ng-checked="check3"
+                            </label>
+                        <label class="checkbox-inline">
+
+                        <input type="checkbox" ng-checked="check3"
                                    ng-model="ctrl.currentSensor.PM10.BOOL" /><b>PM10</b><br>
-                            <input type="checkbox" ng-checked="check4"
+                            </label>
+                        <label class="checkbox-inline">
+
+                        <input type="checkbox" ng-checked="check4"
                                    ng-model="ctrl.currentSensor.SO_2.BOOL" /><b>SO_2</b><br>
-                        </form>
+                            </label>
+                        </div>
                     </div>
                     <code>{{ctrl.currentSensor}}}</code>
                     <button type="submit" class="btn btn-primary"
-
-                            ng-click="ctrl.createSensor()">Add
+                            ng-disabled="!(!formCreateSensor.$invalid)"
+                            ng-click="ctrl.createSensor()" >Add
                     </button>
                     <button type="reset" class="btn btn-danger" ng-click="ctrl.resetFields()">Reset</button>
 

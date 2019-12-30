@@ -7,9 +7,9 @@
  * Controller of the sbAdminApp
  */
 mainAngularModule
-    .controller('SensorsController', ['$scope', 'SensorsFactory', 'ErrorStateRedirector', 'DTOptionsBuilder',
+    .controller('SensorsController', ['$scope', "$state", 'SensorsFactory', 'ErrorStateRedirector', 'DTOptionsBuilder',
         'DTColumnDefBuilder',
-        function ($scope, SensorsFactory ,ErrorStateRedirector, DTOptionsBuilder, DTColumnDefBuilder) {
+        function ($scope, $state, SensorsFactory ,ErrorStateRedirector, DTOptionsBuilder, DTColumnDefBuilder) {
 
             var ctrl = this;
             resetFieldsFn();
@@ -19,32 +19,29 @@ mainAngularModule
             ctrl.editSensor = editSensorFN;
             ctrl.deleteSensor = deleteSensorFn;
 
-            ctrl.currentSensor = {};
-            /*
             ctrl.currentSensor = {
                 "sensor_id": {
-                    "S": "28079515"
+                    "S": ""
                 },
                 "SO_2": {
-                    "BOOL": true
+                    "BOOL": false
                 },
                 "NO_2": {
-                    "BOOL": true
+                    "BOOL": false
                 },
                 "lon": {
-                    "S": "-3.712"
+                    "S": ""
                 },
                 "lat": {
-                    "S": "40.42385"
+                    "S": ""
                 },
                 "CO": {
-                    "BOOL": true
+                    "BOOL": false
                 },
                 "PM10": {
                     "BOOL": false
                 }
             };
-             */
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withDOM('C<"clear">lfrtip');
             $scope.dtColumnDefs = [
@@ -52,16 +49,38 @@ mainAngularModule
             ];
 
 
-            //refreshSensorFn();
+            refreshSensorFn();
             function resetFieldsFn() {
-                ctrl.currentSensor = {};
+                ctrl.currentSensor = {
+                    "sensor_id": {
+                        "S": ""
+                    },
+                    "SO_2": {
+                        "BOOL": false
+                    },
+                    "NO_2": {
+                        "BOOL": false
+                    },
+                    "lon": {
+                        "S": ""
+                    },
+                    "lat": {
+                        "S": ""
+                    },
+                    "CO": {
+                        "BOOL": false
+                    },
+                    "PM10": {
+                        "BOOL": false
+                    }
+                };
             }
             function createSensorFn() {
                 console.log("Create Sensor\n");
                 SensorsFactory.Insert(ctrl.currentSensor,
                     function (response) {
                         console.log(response);
-                        //$state.go('sensors.info', {}, {reload: true});
+                        $state.go('sensors.info', {}, {reload: true});
                     }, function (error) {
                         ErrorStateRedirector.GoToErrorPage({Messaggio: "Error during creation of Sensor:" + error});
                     });
@@ -84,7 +103,7 @@ mainAngularModule
                 console.log("update product with id: " + sProduct.id);
                 SensorsFactory.Update(sProduct,
                     function () {
-                        refreshProductFn();
+                        refreshSensorFn();
                     }, function (error) {
                         ErrorStateRedirector.GoToErrorPage({Messaggio: "Error during modify Sensor: " + error});
                     });
@@ -95,7 +114,7 @@ mainAngularModule
                 console.log("Delete Sensor with ID: " + id);
                 SensorsFactory.Remove(id,
                     function () {
-                        refreshProductFn();
+                        refreshSensorFn();
                     }, function (error) {
                         ErrorStateRedirector.GoToErrorPage({Messaggio: "Error during elimination of Sensor: " + error});
                     });

@@ -24,9 +24,6 @@ mainAngularModule
                 $scope.counter = 5;
 
                 $scope.setSidebar = function () {
-                    //console.log("entro nell©a setSidebar");
-                    //$scope.userInfo = AuthFactory.getAuthInfo();
-                    //console.log($scope.userInfo);
                     $scope.sidebarList = {
                         lists: [
                             {

@@ -23,7 +23,8 @@ mainAngularModule
     .constant('ACL_RECORDS_ENDPOINT_URL', '/acl-records/')
     .constant('REQUESTS_LOGS_ENDPOINT_URL', '/requests-logs/')
     .constant('AUDITING_ENDPOINT_URL', '/auditing-logs/')
-    .constant('APIGATEWAY_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/sensors')
+    .constant('APIGATEWAY_SENSORS_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/sensors')
+    .constant('APIGATEWAY_ALARMS_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/alarms')
     .constant('WEBSOCKET_ALARM_ENDPOINT_URL', 'wss://p7s6xjwg04.execute-api.eu-central-1.amazonaws.com/dev')
 
 
