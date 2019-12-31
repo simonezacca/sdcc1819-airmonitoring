@@ -53,8 +53,10 @@ mainAngularModule
             ];*/
             refreshInfluxDataFn();
 
-            function cleanValue(rawText) {
-                return rawText.replace("#datatype","");
+            function extractValueForSeason(rawText, seasonString) {
+                let start_index = rawText.indexOf(","+seasonString);
+                let result = rawText.substring(start_index+13, start_index+13+18);
+                return result;
             }
 
             function refreshInfluxDataFn() {
@@ -62,36 +64,36 @@ mainAngularModule
                 BatchFactory.GetAllQ1(
                     function (batchData) {
                         console.log(batchData);
-                        ctrl.batchData = JSON.parse(batchData);
+                        ctrl.batchData = batchData;
 
 
                         let COresult = ctrl.batchData[0].result;
-                        let COresultSplit = COresult.split(',');
-                        $scope.dataCO.push(cleanValue(COresultSplit[15]));
-                        $scope.dataCO.push(cleanValue(COresultSplit[30]));
-                        $scope.dataCO.push(cleanValue(COresultSplit[45]));
-                        $scope.dataCO.push(cleanValue(COresultSplit[60]));
+
+                        $scope.dataCO.push(extractValueForSeason(COresult,"spring"));
+                        $scope.dataCO.push(extractValueForSeason(COresult,"summer"));
+                        $scope.dataCO.push(extractValueForSeason(COresult,"autumn"));
+                        $scope.dataCO.push(extractValueForSeason(COresult,"winter"));
 
                         let NO_2result = ctrl.batchData[1].result;
-                        let NO_2resultSplit = NO_2result.split(',');
-                        $scope.dataNO_2.push(cleanValue(NO_2resultSplit[15]));
-                        $scope.dataNO_2.push(cleanValue(NO_2resultSplit[30]));
-                        $scope.dataNO_2.push(cleanValue(NO_2resultSplit[45]));
-                        $scope.dataNO_2.push(cleanValue(NO_2resultSplit[60]));
+
+                        $scope.dataNO_2.push(extractValueForSeason(NO_2result,"spring"));
+                        $scope.dataNO_2.push(extractValueForSeason(NO_2result,"summer"));
+                        $scope.dataNO_2.push(extractValueForSeason(NO_2result,"autumn"));
+                        $scope.dataNO_2.push(extractValueForSeason(NO_2result,"winter"));
 
                         let SO_2result = ctrl.batchData[2].result;
-                        let SO_2resultSplit = SO_2result.split(',');
-                        $scope.dataSO_2.push(cleanValue(SO_2resultSplit[15]));
-                        $scope.dataSO_2.push(cleanValue(SO_2resultSplit[30]));
-                        $scope.dataSO_2.push(cleanValue(SO_2resultSplit[45]));
-                        $scope.dataSO_2.push(cleanValue(SO_2resultSplit[60]));
+
+                        $scope.dataSO_2.push(extractValueForSeason(SO_2result,"spring"));
+                        $scope.dataSO_2.push(extractValueForSeason(SO_2result,"summer"));
+                        $scope.dataSO_2.push(extractValueForSeason(SO_2result,"autumn"));
+                        $scope.dataSO_2.push(extractValueForSeason(SO_2result,"winter"));
 
                         let PM10result = ctrl.batchData[3].result;
-                        let PM10resultSplit = PM10result.split(',');
-                        $scope.dataPM10.push(cleanValue(PM10resultSplit[15]));
-                        $scope.dataPM10.push(cleanValue(PM10resultSplit[30]));
-                        $scope.dataPM10.push(cleanValue(PM10resultSplit[45]));
-                        $scope.dataPM10.push(cleanValue(PM10resultSplit[60]));
+                        
+                        $scope.dataPM10.push(extractValueForSeason(PM10result,"spring"));
+                        $scope.dataPM10.push(extractValueForSeason(PM10result,"summer"));
+                        $scope.dataPM10.push(extractValueForSeason(PM10result,"autumn"));
+                        $scope.dataPM10.push(extractValueForSeason(PM10result,"winter"));
                     }, function (error) {
                         ErrorStateRedirector.GoToErrorPage({Messaggio: "Errore nell'import dei dati"});
                     });
