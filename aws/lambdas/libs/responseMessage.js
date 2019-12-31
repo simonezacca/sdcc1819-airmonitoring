@@ -1,5 +1,5 @@
 function createErrorResponseFn(statusCode, message, encoding) {
-    var response = {
+    let response = {
         'statusCode': statusCode,
         'headers' : {'Access-Control-Allow-Origin' : '*'},
         'body' : JSON.stringify({'code': statusCode, 'messsage' : message, 'encoding' : encoding})
@@ -8,7 +8,7 @@ function createErrorResponseFn(statusCode, message, encoding) {
 }
 
 function createSuccessResponseFn(statusCode, result) {
-    var response = {
+    let response = {
         'statusCode': statusCode,
         'headers' : {'Access-Control-Allow-Origin' : '*','Access-Control-Allow-Headers' : '*'},
         'body' : JSON.stringify(result)
