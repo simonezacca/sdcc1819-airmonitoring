@@ -27,7 +27,8 @@ function redisGet(queryNameKey, finalCallBack) {
             return {};
         }
         console.log('query result: ' + result);
-        finalCallBack(null, msgLibs.createSuccessResponse(200,result));
+        let resultObject = JSON.parse(result);
+        finalCallBack(null, msgLibs.createSuccessResponse(200,resultObject));
         client.quit();
     });
 }
