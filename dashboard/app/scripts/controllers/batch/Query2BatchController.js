@@ -6,9 +6,58 @@
  * # MainCtrl
  * Controller of the sbAdminApp
  */
+
 mainAngularModule
     .controller('Query2BatchController', ['$scope', '$state', 'BatchFactory', 'DTOptionsBuilder', 'DTColumnDefBuilder', 'ErrorStateRedirector',
         function ($scope, $state, BatchFactory, DTOptionsBuilder, DTColumnDefBuilder, ErrorStateRedirector) {
+
+            function createDataObjectArray(rawResponseObjArray) {
+                let resultDataObjectArray = [];
+                rawResponseObjArray.forEach(
+                    (singleProblemObject) => {
+                        resultDataObjectArray.push(createDataObject(singleProblemObject));
+                    }
+                );
+                return resultDataObjectArray;
+            }
+
+            function createDataObject(singleProblemObject) {
+                let resultDataObj = {};
+                resultDataObj.problem_description = singleProblemObject.problem_description;
+
+                let cleanedStrings = singleProblemObject.result_query.split('\n');
+                cleanedStrings.splice(0,3);
+                return convertCSVStringToObject(cleanedStrings);
+            }
+
+            function convertCSVStringToObject(rawString) {
+                let jsonObj = [];
+                let headers = rawString[0].split(',');
+                //remove first elem
+                if (headers[0]=="") {
+                    headers.splice(0,1);
+                }
+                for(let i = 1; i < rawString.length; i++) {
+                    let data = rawString[i].split(',');
+                    if (data[0]=="") {
+                        data.splice(0,1);
+                    }
+                    let obj = {};
+                    for(let j = 0; j < data.length; j++) {
+                        obj[headers[j].trim()] = data[j].trim();
+                    }
+                    jsonObj.push(obj);
+                }
+                return jsonObj;
+            }
+
+            function createLabels(problemObjects) {
+                let labels = [];
+                problemObjects.forEach(
+                    (po) => labels.push(po.sensorid)
+                );
+                return labels;
+            }
 
             var ctrl = this;
             ctrl.refreshInfluxData = refreshInfluxDataFn;
@@ -47,41 +96,16 @@ mainAngularModule
                 alert("You hovered over " + $event[0]._view.label);
             };
 
-            /*$scope.dtOptions = DTOptionsBuilder.newOptions().withDOM('C<"clear">');
-            $scope.dtColumnDefs = [
-                DTColumnDefBuilder.newColumnDef(6).notSortable()
-            ];*/
+
             refreshInfluxDataFn();
 
             function refreshInfluxDataFn() {
                 console.log("refresh data");
                 BatchFactory.GetAllQ2(
                     function (batchData) {
-                        ctrl.batchData = JSON.parse(batchData);
-                        let COresult = ctrl.batchData[0].result1;
-                        let COresultSplit = COresult.split(',');
-                        $scope.dataCO.push(COresultSplit[27]);
-                        $scope.dataCO.push(COresultSplit[34]);
-                        $scope.dataCO.push(COresultSplit[41]);
-                        $scope.dataCO.push(COresultSplit[48]);
-                        let NO_2result = ctrl.batchData[1].result2;
-                        let NO_2resultSplit = NO_2result.split(',');
-                        $scope.dataNO_2.push(NO_2resultSplit[27]);
-                        $scope.dataNO_2.push(NO_2resultSplit[34]);
-                        $scope.dataNO_2.push(NO_2resultSplit[41]);
-                        $scope.dataNO_2.push(NO_2resultSplit[48]);
-                        let SO_2result = ctrl.batchData[2].result3;
-                        let SO_2resultSplit = SO_2result.split(',');
-                        $scope.dataSO_2.push(SO_2resultSplit[27]);
-                        $scope.dataSO_2.push(SO_2resultSplit[34]);
-                        $scope.dataSO_2.push(SO_2resultSplit[41]);
-                        $scope.dataSO_2.push(SO_2resultSplit[48]);
-                        let PM10result = ctrl.batchData[3].result4;
-                        let PM10resultSplit = PM10result.split(',');
-                        $scope.dataPM10.push(PM10resultSplit[27]);
-                        $scope.dataPM10.push(PM10resultSplit[34]);
-                        $scope.dataPM10.push(PM10resultSplit[41]);
-                        $scope.dataPM10.push(PM10resultSplit[48]);
+                        ctrl.query2Data = createDataObjectArray(batchData);
+                        ctrl.labels = createLabels(ctrl.query2Data[0]);
+
                     }, function (error) {
                         ErrorStateRedirector.GoToErrorPage({Messaggio: "Errore nell'import dei dati"});
                     });
