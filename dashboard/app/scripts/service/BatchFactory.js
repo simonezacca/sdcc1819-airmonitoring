@@ -11,10 +11,10 @@
 mainAngularModule
     .factory('BatchFactory', ['$http', 'APIGATEWAY_INFLUXQUERY1_ENDPOINT_URL', 'APIGATEWAY_INFLUXQUERY2_ENDPOINT_URL', 'ToasterNotifierHandler',
         function ($http, APIGATEWAY_INFLUXQUERY1_ENDPOINT_URL, APIGATEWAY_INFLUXQUERY2_ENDPOINT_URL, ToasterNotifierHandler) {
-            let thisCrudService = {};
+            var thisCrudService = {};
             thisCrudService.batchData = {};
-            let _endPointJSON1 = APIGATEWAY_INFLUXQUERY1_ENDPOINT_URL;
-            let _endPointJSON2 = APIGATEWAY_INFLUXQUERY2_ENDPOINT_URL;
+            var _endPointJSON1 = APIGATEWAY_INFLUXQUERY1_ENDPOINT_URL;
+            var _endPointJSON2 = APIGATEWAY_INFLUXQUERY2_ENDPOINT_URL;
 
 
             thisCrudService.GetAllQ1 = GetAllQ1Fn;

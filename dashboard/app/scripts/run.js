@@ -27,7 +27,7 @@ mainAngularModule.run(['$rootScope', 'DEBUG', 'authManager', 'DTDefaultOptions',
         $rootScope.isDebug = DEBUG;
         console.info('isDebug: ' + $rootScope.isDebug);
 
-        $transitions.onError({}, ($transition$) => {
+        /*$transitions.onError({}, ($transition$) => {
             var toStateName = $transition$.to().name;
             var fromStateName = $transition$.from().name;
             if (toStateName != fromStateName) {
@@ -38,7 +38,7 @@ mainAngularModule.run(['$rootScope', 'DEBUG', 'authManager', 'DTDefaultOptions',
                 }
                 ErrorStateRedirector.GoToErrorPage({Messaggio: Msg});
             }
-        });
+        });*/
 
         authManager.checkAuthOnRefresh();
         authManager.redirectWhenUnauthenticated();

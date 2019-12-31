@@ -27,6 +27,8 @@ mainAngularModule
     .constant('APIGATEWAY_ALARMS_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/alarms')
     .constant('APIGATEWAY_INFLUXQUERY1_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/influxquery1')
     .constant('APIGATEWAY_INFLUXQUERY2_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/influxquery2')
+    .constant('APIGATEWAY_FLINKQUERY1_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/flinkquery1')
+    .constant('APIGATEWAY_FLINKQUERY2_ENDPOINT_URL', 'https://84qebd57z2.execute-api.eu-central-1.amazonaws.com/dev/flinkquery2')
     .constant('WEBSOCKET_ALARM_ENDPOINT_URL', 'wss://p7s6xjwg04.execute-api.eu-central-1.amazonaws.com/dev')
 
 

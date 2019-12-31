@@ -1,0 +1,62 @@
+<div>
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">InfluxDB Charts</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <div class="col-lg-12">
+        <div class="row">
+            <!-- <code>{{ctrl.batchData}}</code> -->
+            <div class="panel panel-primary">
+                <code>{{ctrl.realtimeDataAll}}</code>
+                <div class="panel-heading">All Compounds</div>
+                <div class="panel-body">
+                    <div class="card mb-3">
+                        <section>
+                            <div class="row lead">
+                                <div class="col-md-12 text-center ">Global view</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="chart-container">
+                                        <canvas width='700' height='200' class="chart chart-line" chart-data="dataAll" chart-labels="labels"
+                                                chart-series="series" chart-click="onClick"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <div class="panel panel-primary">
+                <code>{{ctrl.realtimeDataSingle}}</code>
+                <div class="panel-heading">Single Compound</div>
+                <div class="panel-body">
+                    <div class="card mb-3">
+                        <section>
+                            <div class="row lead">
+                                <div class="col-md-12 text-center ">Compound: </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="chart-container">
+                                        <canvas width='700' height='200' class="chart chart-line" chart-data="dataSingle" chart-labels="labels"
+                                                chart-series="series" chart-click="onClick"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <div class="row">
+            <button class="btn btn-success" ui-sref="" >Add Sensor</button>
+        </div>
+    </div>
+</div>

@@ -30,7 +30,16 @@ mainAngularModule
                                 "title": "Real Time",
                                 "num": 1,
                                 "icon": "fa-cloud",
-                                "state": "realtime.info"
+                                item:[
+                                    {
+                                        "nome": "Query1",
+                                        "state": "realtime.query1"
+                                    },
+                                    {
+                                        "nome": "Query2",
+                                        "state": "realtime.query2"
+                                    }
+                                ]
                             },
                             {
                                 "title": "Batch",
