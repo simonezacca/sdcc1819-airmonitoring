@@ -18,6 +18,7 @@ mainAngularModule.config(function Config($httpProvider, jwtOptionsProvider, AclS
 
     AclServiceProvider.resume();
     angular.extend(toastrConfig,{
-        timeOut: 90000
+        timeOut: 90000,
+        allowHtml: true
     })
 });
