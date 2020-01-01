@@ -5,93 +5,26 @@
         </div>
         <!-- /.col-lg-12 -->
     </div>
-    {{ctrl.query2Data[0]}}
-    </br>
-    </br>
-    {{ctrl.labels}}
+    <code>{{ctrl.query2DataForChart}}</code>
     <div class="col-lg-12">
         <div class="row">
-           <!-- <code>{{ctrl.batchData}}</code> -->
-            <div class="panel panel-primary">
-                <div class="panel-heading">CO</div>
+            <div class="panel panel-primary" ng-repeat="problemData in ctrl.query2DataForChart">
+                <div class="panel-heading">{{problemData.problem_description}}</div>
                 <div class="panel-body">
                     <div class="card mb-3">
                         <section>
-                            <div class="row lead">
-                                <div class="col-md-12 text-center ">CO Chart</div>
-                            </div>
                             <div class="row">
                                 <div class="col-md-12">
                                 <div class="chart-container">
-                                    <canvas width='700' height='200' class="chart chart-bar" chart-data="dataCO" chart-labels="labels"
-                                            chart-series="series" chart-click="onClick"></canvas>
+                                    <canvas width='700' height='200'
+                                            class="chart chart-bar"
+                                            chart-data="problemData.data"
+                                            chart-labels="problemData.labels"
+                                            chart-series="problemData.series"
+                                            chart-click="onClick" chart-options="options"
+                                            chart-dataset-override="datasetOverride"
+                                    ></canvas>
                                 </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                    <!-- /.table-responsive -->
-                </div>
-                <!-- /.panel-body -->
-            </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">NO2</div>
-                <div class="panel-body">
-                    <div class="card mb-3">
-                        <section>
-                            <div class="row lead">
-                                <div class="col-md-12 text-center ">NO2 Chart</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="chart-container">
-                                        <canvas width='700' height='200' class="chart chart-bar" chart-data="dataSO_2" chart-labels="labels"
-                                                chart-series="series" chart-click="onClick"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                    <!-- /.table-responsive -->
-                </div>
-                <!-- /.panel-body -->
-            </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">SO2</div>
-                <div class="panel-body">
-                    <div class="card mb-3">
-                        <section>
-                            <div class="row lead">
-                                <div class="col-md-12 text-center ">SO2 Chart</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="chart-container">
-                                        <canvas width='700' height='200' class="chart chart-bar" chart-data="dataNO_2" chart-labels="labels"
-                                                chart-series="series" chart-click="onClick"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                    <!-- /.table-responsive -->
-                </div>
-                <!-- /.panel-body -->
-            </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">PM10</div>
-                <div class="panel-body">
-                    <div class="card mb-3">
-                        <section>
-                            <div class="row lead">
-                                <div class="col-md-12 text-center ">PM10 Chart</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="chart-container">
-                                        <canvas width='700' height='200' class="chart chart-bar" chart-data="dataPM10" chart-labels="labels"
-                                                chart-series="series" chart-click="onClick"></canvas>
-                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -101,9 +34,6 @@
                 <!-- /.panel-body -->
             </div>
             <!-- /.panel -->
-        </div>
-        <div class="row">
-            <button class="btn btn-success" ui-sref="" >Add Sensor</button>
         </div>
     </div>
 </div>
