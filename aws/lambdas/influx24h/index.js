@@ -22,7 +22,7 @@ const redisAPIOptions = {
 };
 
 
-function doParallelQuerySeasons(post_options,context,finalCallBack) {
+function doQuerySeasons(post_options,context,finalCallBack) {
     let compounds = ["CO","PM10","SO_2", "NO_2"];
     let queriesObjects = compounds.map(c => influxQueriesFunctions.createQueryObjectSeason(c));
 
@@ -31,9 +31,9 @@ function doParallelQuerySeasons(post_options,context,finalCallBack) {
         post_options1.body = queriesObject.query;
         let compound = queriesObject.compound;
         console.log("QuerySeasons - Compound "+ compound);
-        influxDbUtils.sendQueryToInfluxDb(post_options1, context, (chunk) => {
-            //console.log(chunk.toString("utf8"));
-            let result = {"compound":compound, "result":chunk};
+        influxDbUtils.sendQueryToInfluxDb(post_options1, context, (response) => {
+            //console.log(response.toString("utf8"));
+            let result = {"compound":compound, "result":response};
             console.log("Result query seasons: " +JSON.stringify(result));
             callback(null, result);
         });
@@ -53,12 +53,12 @@ function doParallelQuerySeasons(post_options,context,finalCallBack) {
             doSingleQuery(post_options,queriesObjects[3],callback);
         }
     ], (err, result) => {
-        console.log("async.parallel completed with "+ JSON.stringify(result));
+        console.log("async.series completed with "+ JSON.stringify(result));
         finalCallBack(result);
     });
 }
 
-function doParallelQueryHealthProblems(post_options,context,finalCallBack) {
+function doQueryHealthProblems(post_options,context,finalCallBack) {
 
     function doSingleQuery(post_options,queryObject,callback) {
         let clonedPostOptions = Object.assign({}, post_options);
@@ -66,7 +66,10 @@ function doParallelQueryHealthProblems(post_options,context,finalCallBack) {
         console.log("Query "+ queryObject.problem_description);
         influxDbUtils.sendQueryToInfluxDb(clonedPostOptions, context, (chunk) => {
             //console.log(chunk.toString("utf8"));
-            let result = {"problem_description":queryObject.problem_description, "result_query":chunk};
+            let result = {
+                "problem_description":queryObject.problem_description,
+                "params": queryObject.params,
+                "result_query":chunk};
             msgLibs.createSuccessResponse(200,result);
             console.log("Result query health problems: " +JSON.stringify(result));
             callback(null, result);
@@ -102,13 +105,13 @@ exports.handler = function (event, context, callback) {
     async.series([
             (callback) => {
                 // which seasons is the most pollution?
-                doParallelQuerySeasons(influxDbAPIOptions,context,(influxResult) => {
+                doQuerySeasons(influxDbAPIOptions,context,(influxResult) => {
                     redisUtils.writeOnRedis(redisAPIOptions,"query_seasons_pollution",influxResult, callback);
                 });
             },
             (callback) => {
                 // which area is the most risky to health?
-                doParallelQueryHealthProblems(influxDbAPIOptions,context,(influxResult) => {
+                doQueryHealthProblems(influxDbAPIOptions,context,(influxResult) => {
                     redisUtils.writeOnRedis(redisAPIOptions,"query_healths_problems",influxResult, callback);
                 });
             }

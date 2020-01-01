@@ -138,6 +138,7 @@ function createQueryGenericHealthProblemsFn(rangeStart,rangeEnd,queryDescription
 
     return {
         "problem_description" : queryDescription,
+        "params": params,
         "query" : generalQ
     }
 
