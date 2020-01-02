@@ -7,8 +7,10 @@
  * Controller of the sbAdminApp
  */
 mainAngularModule
-    .controller('RealtimeController', ['$scope', '$state', 'RealtimeFactory', 'DTOptionsBuilder', 'DTColumnDefBuilder', 'ErrorStateRedirector',
-        function ($scope, $state, RealtimeFactory, DTOptionsBuilder, DTColumnDefBuilder, ErrorStateRedirector) {
+    .controller('RealtimeController', ['$scope', '$state', 'RealtimeFactory', 'DTOptionsBuilder',
+        'DTColumnDefBuilder', 'ErrorStateRedirector', '$q',
+        function ($scope, $state, RealtimeFactory, DTOptionsBuilder,
+                  DTColumnDefBuilder, ErrorStateRedirector, $q) {
 
             var ctrl = this;
             //TODO fare la single per ogni comopoente invece di fare la getAll così i flussi sono già divisi
@@ -17,21 +19,53 @@ mainAngularModule
             ctrl.setDataAll = setDataAllFn;
             ctrl.setDataSingle = setDataSingleFn;
             ctrl.chemical_compounds = ["NO_2", "CO", "SO_2", "PM10"];
-            ctrl.realtimeDataAll = [
-                {
-                    "Items": []
-                },
-                {
-                    "Items": []
-                },
-                {
-                    "Items": []
-                },
-                {
-                    "Items": []
-                }
-            ];
+            ctrl.realtimeDataAll = [];
             ctrl.realtimeDataSingle = [];
+
+            //calendar start
+            $scope.endDateBeforeRender = endDateBeforeRender;
+            $scope.endDateOnSetTime = endDateOnSetTime;
+            $scope.startDateBeforeRender = startDateBeforeRender;
+            $scope.startDateOnSetTime = startDateOnSetTime;
+
+            function startDateOnSetTime () {
+                $scope.$broadcast('start-date-changed');
+            }
+
+            function endDateOnSetTime () {
+                $scope.$broadcast('end-date-changed');
+            }
+
+            function startDateBeforeRender ($dates) {
+                if ($scope.dateRangeEnd) {
+                    var activeDate = moment($scope.dateRangeEnd);
+
+                    $dates.filter(function (date) {
+                        return date.localDateValue() >= activeDate.valueOf()
+                    }).forEach(function (date) {
+                        date.selectable = false;
+                    })
+                }
+            }
+
+            function endDateBeforeRender ($view, $dates) {
+                if ($scope.dateRangeStart) {
+                    var activeDate = moment($scope.dateRangeStart).subtract(1, $view).add(1, 'minute');
+
+                    $dates.filter(function (date) {
+                        return date.localDateValue() <= activeDate.valueOf()
+                    }).forEach(function (date) {
+                        date.selectable = false;
+                    })
+                }
+            }
+            //calendar end
+
+            //button for single compound chart
+            $scope.radioModel = 'CO';
+            $scope.selected = ['CO', 'NO_2', "SO_2", "PM10"];
+            //
+
 
             var ctx = document.getElementById("allChart").getContext("2d");
             var cty = document.getElementById("singleChart").getContext("2d");
@@ -44,6 +78,7 @@ mainAngularModule
                         //data: [{y: 20, x: 0.1}, {y: 50, x:0.5}, {y: 100, x: 1.0}, {y: 75, x: 2.0}],
                         data: [],
                         label: '',
+                        labels: [],
                         borderColor: 'rgba(255, 99, 132, 0.5)',
                         // This binds the dataset to the left y axis
                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -52,6 +87,7 @@ mainAngularModule
                     }, {
                         data: [],
                         label: '',
+                        labels: [],
                         borderColor: 'rgba(54, 162, 235, 0.5)',
                         // This binds the dataset to the right y axis
                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -60,6 +96,7 @@ mainAngularModule
                     }, {
                         data: [],
                         label: '',
+                        labels: [],
                         borderColor: 'rgba(75, 192, 192, 0.5)',
                         // This binds the dataset to the right y axis
                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -68,6 +105,7 @@ mainAngularModule
                     }, {
                         data: [],
                         label: '',
+                        labels: [],
                         borderColor: 'rgba(255, 159, 64, 0.5)',
                         // This binds the dataset to the right y axis
                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -207,54 +245,85 @@ mainAngularModule
 
             function setDataAllFn() {
                 console.log(ctrl.realtimeDataAll[0].Items);
-                for(var i=4; i<8; i++){
-                    allLine.data.datasets[i-4].label = ctrl.chemical_compounds[i-4];
-                    for(var j=0; j<Object.keys(ctrl.realtimeDataAll[i]).length; j++){
-                        var item = {
-                          y: ctrl.realtimeDataAll[i].Items[j].value,
-                          x: ctrl.realtimeDataAll[i].Items[j].timestamp
-                        };
-                        allLine.data.datasets[i-4].data.push(item);
-                    }
-                    console.log(allLine.data.datasets[i-4].data);
+                for(var i=0; i<4; i++){
+                    allLine.data.datasets[i].label = ctrl.chemical_compounds[i];
+
+                    var curData = ctrl.realtimeDataAll[i].Items;
+
+                    curData.forEach(
+                        function(cp) {
+                            var dataPoint = {
+                                y: parseFloat(cp.value.N),
+                                x: parseFloat(cp.timestamp.N)
+                            };
+                            allLine.data.datasets[i].data.push(dataPoint);
+                            allLine.data.datasets[i].labels.push("Ciao");
+                        }
+                    );
+
                 }
+                console.log(allLine.data.datasets);
+                allChart.update();
             }
 
             function setDataSingleFn() {
                 //singleLine.data.dataset[0].label = $stateParams.chemical_compound;
                 singleLine.data.datasets[0].label = "NO_2";
-                for(var j=0; j<ctrl.realtimeDataSingle.length; j++){
-                    var item = {
-                        y: ctrl.realtimeDataSingle[j].value,
-                        x: ctrl.realtimeDataSingle[j].timestamp
-                    };
-                    singleLine.data.datasets[0].data.push(item);
-                }
+
+                var curData = ctrl.realtimeDataSingle.Items;
+                curData.forEach(
+                    function(cp) {
+                        var dataPoint = {
+                            y: parseFloat(cp.value.N),
+                            x: parseFloat(cp.timestamp.N)
+                        };
+                        singleLine.data.datasets[0].data.push(dataPoint);
+                    }
+                );
+                singleChart.update();
+                console.log(singleLine.data.datasets[0].data)
             }
 
             function getAllCompoundDataFn(timestamp) {
                 console.log("refresh data");
+                var dataPromises = [];
                 for(var i=0; i<4; i++){
+                    var prom = $q.defer();
                     RealtimeFactory.GetSingleQ1(ctrl.chemical_compounds[i], timestamp,
                         function (realtimeDataSingle) {
                             ctrl.realtimeDataAll.push(realtimeDataSingle);
-                        }, function (error) {
+                            //prom.resolve();
+
+                        },
+                        prom
+                        ,function (error) {
                             ErrorStateRedirector.GoToErrorPage({Messaggio: "Errore nell'import dei dati"});
                         });
+                    dataPromises.push(prom.promise);
                 }
-                setDataAllFn();
+
+                $q.all(dataPromises).then(function (value) {
+                    setDataAllFn();
+                }, function (error) { console.log(error) });
+                /*setTimeout(function() {
+                    setDataAllFn();
+                },10000);*/
+
+
             }
 
             function getSingleCompoundDataFn(timestamp) {
                 //var chemicalCompound = $stateParams.chemical_compound;
                 var chemicalCompound = "NO_2";
                 RealtimeFactory.GetSingleQ1(chemicalCompound, timestamp,
-                    function (realtimeDataSingle) {
-                        ctrl.realtimeDataSingle = realtimeDataSingle;
+                    function (realtimeData) {
+                        ctrl.realtimeDataSingle = realtimeData;
                         setDataSingleFn();
-                    }, function (error) {
+                    }, null,
+                    function (error) {
                         ErrorStateRedirector.GoToErrorPage({Messaggio: "Errore nell'import dei dati"});
                     });
+
             }
 
         }]);

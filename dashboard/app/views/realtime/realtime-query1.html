@@ -5,16 +5,51 @@
         </div>
         <!-- /.col-lg-12 -->
     </div>
+    <div class="row">
+
+    </div>
     <div class="col-lg-12">
         <div class="row">
             <!-- <code>{{ctrl.batchData}}</code> -->
             <div class="panel panel-primary">
-                <code>{{ctrl.realtimeDataAll}}</code>
+                <!--<code>{{ctrl.realtimeDataAll}}</code>-->
                 <div class="panel-heading">All Compounds</div>
                 <div class="panel-body">
                     <div class="card mb-3">
+                        <div class="col-md-12">
                         <section>
                             <div class="row lead">
+                                <div class="dropdown form-group dropdown-start-parent">
+                                    <label>Start Date</label>
+                                    <a class="dropdown-toggle" id="dropdownStart" role="button" data-toggle="dropdown" data-target=".dropdown-start-parent">
+                                        <div class="input-group date">
+                                            <input type="text" class="form-control" data-ng-model="dateRangeStart">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                        <datetimepicker data-ng-model="dateRangeStart"
+                                                        data-datetimepicker-config="{ dropdownSelector: '#dropdownStart', renderOn: 'end-date-changed' }"
+                                                        data-on-set-time="startDateOnSetTime()"
+                                                        data-before-render="startDateBeforeRender($dates)"></datetimepicker>
+                                    </ul>
+                                </div>
+
+                                <div class="dropdown form-group dropdown-end-parent">
+                                    <label>End Date</label>
+                                    <a class="dropdown-toggle" id="dropdownEnd" role="button" data-toggle="dropdown" data-target=".dropdown-end-parent">
+                                        <div class="input-group date">
+                                            <input type="text" class="form-control" data-ng-model="dateRangeEnd">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                        <datetimepicker data-ng-model="dateRangeEnd"
+                                                        data-datetimepicker-config="{ dropdownSelector: '#dropdownEnd', renderOn: 'start-date-changed' }"
+                                                        data-on-set-time="endDateOnSetTime()"
+                                                        data-before-render="endDateBeforeRender($view, $dates, $leftDate, $upDate, $rightDate)"></datetimepicker>
+                                    </ul>
+                                </div>
                                 <div class="col-md-12 text-center ">Global view</div>
                             </div>
                             <div class="row">
@@ -26,17 +61,38 @@
                                     </div>
                                 </div>
                             </div>
+
                         </section>
                     </div>
                     <!-- /.table-responsive -->
                 </div>
                 <!-- /.panel-body -->
             </div>
+            </div>
+            <div class="row">
             <div class="panel panel-primary">
-                <code>{{ctrl.realtimeDataSingle}}</code>
                 <div class="panel-heading">Single Compound</div>
                 <div class="panel-body">
                     <div class="card mb-3">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="radio-inline">
+                                    <input type="radio" ng-checked="selected=='CO'" ng-model="selected" value="CO">CO</input>
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" ng-checked="selected=='NO_2'" ng-model="selected" value="NO_2">NO_2</input>
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" ng-checked="selected=='SO_2'" ng-model="selected" value="SO_2">SO_2</input>
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" ng-checked="selected=='PM10'" ng-model="selected" value="PM10">PM10</input>
+                                </label>
+                            </div>
+                            <code>{{selected}}</code>
+                        </div>
+
                         <section>
                             <div class="row lead">
                                 <div class="col-md-12 text-center ">Compound: </div>
@@ -56,9 +112,8 @@
                 </div>
                 <!-- /.panel-body -->
             </div>
+            </div>
         </div>
-        <div class="row">
-            <button class="btn btn-success" ui-sref="" >Add Sensor</button>
-        </div>
+
     </div>
 </div>

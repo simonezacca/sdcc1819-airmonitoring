@@ -13,5 +13,6 @@ var mainAngularModule = angular
         'mm.acl',
         'ngWebsocket',
         'toastr',
-        'chart.js'
+        'chart.js',
+        'ui.bootstrap.datetimepicker'
     ]);

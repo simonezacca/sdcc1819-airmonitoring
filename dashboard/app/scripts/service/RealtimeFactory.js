@@ -67,7 +67,7 @@ mainAngularModule
             }
 
 
-            function GetSingleQ1Fn(chemical_compound, realtime, successCB, errorCB) {
+            function GetSingleQ1Fn(chemical_compound, realtime, successCB, successPromise, errorCB) {
 
                 $http({
                     method: 'GET',
@@ -77,6 +77,9 @@ mainAngularModule
                     .then(function (response) {
                             if (successCB) {
                                 successCB(response.data);
+                                if (successPromise) {
+                                    successPromise.resolve();
+                                }
                             }
                             //return response.data;
                         },
