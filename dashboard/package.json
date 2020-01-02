@@ -9,7 +9,7 @@
     "angular-chart.js": "^1.1.1",
     "angular-datatables": "^0.6.2",
     "angular-ui-notification": "^0.3.6",
-    "angularjs-bootstrap-datetimepicker": "^1.1.4"
+    "angularjs-bootstrap-datetimepicker": "^1.1.4",
     "angular-ui-notification": "^0.3.6",
     "imagemin-pngquant": "^8.0.0"
   },
