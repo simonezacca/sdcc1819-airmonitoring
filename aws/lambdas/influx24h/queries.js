@@ -132,9 +132,11 @@ function createQueryGenericHealthProblemsFn(rangeStart,rangeEnd,queryDescription
 
     });
 
-    generalQ +=
-        "a = join(tables: {"+ joinTablesString +"}, on: [\"_start\",\"_stop\",\"sensorid\"])\n" +
-        "|> yield(name: \""+queryDescription+"\")";
+    if(params.length >= 2){
+        generalQ +=
+            "a = join(tables: {"+ joinTablesString +"}, on: [\"_start\",\"_stop\",\"sensorid\"])\n";
+    }
+    generalQ+="|> yield(name: \""+queryDescription+"\")";
 
     return {
         "problem_description" : queryDescription,
@@ -175,16 +177,10 @@ function createQueryCancerProblemsFn() {
 
     let params = [
         {
-            "compound_name": "O_3",
-            "limit_value": 120,
+            "compound_name": "PM10",
+            "limit_value": 50,
             "windowEvery": "1d",
-            "windowPeriod": "25d"
-        },
-        {
-            "compound_name": "NO_2",
-            "limit_value": 200,
-            "windowEvery": "1h",
-            "windowPeriod": "18h"
+            "windowPeriod": "35d"
         }
     ];
     return createQueryGenericHealthProblemsFn(rangeStart,rangeEnd,queryDescription,params);
@@ -198,16 +194,16 @@ function createQueryHearthProblemsFn() {
 
     let params = [
         {
-            "compound_name": "O_3",
-            "limit_value": 120,
+            "compound_name": "PM10",
+            "limit_value": 50,
             "windowEvery": "1d",
-            "windowPeriod": "25d"
+            "windowPeriod": "35d"
         },
         {
-            "compound_name": "NO_2",
-            "limit_value": 200,
-            "windowEvery": "1h",
-            "windowPeriod": "18h"
+            "compound_name": "SO_2",
+            "limit_value": 85,
+            "windowEvery": "1d",
+            "windowPeriod": "3d"
         }
     ];
     return createQueryGenericHealthProblemsFn(rangeStart,rangeEnd,queryDescription,params);
