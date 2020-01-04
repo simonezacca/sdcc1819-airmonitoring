@@ -50,6 +50,7 @@
                                                         data-before-render="endDateBeforeRender($view, $dates, $leftDate, $upDate, $rightDate)"></datetimepicker>
                                     </ul>
                                 </div>
+                                    <button class="btn btn-primary" ng-click="ctrl.setTimestampForAllCompounds()">Refresh</button>
                                 <div class="col-md-12 text-center ">Global view</div>
                             </div>
                             <div class="row">
@@ -79,16 +80,16 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <label class="radio-inline">
-                                    <input type="radio" ng-checked="selected=='CO'" ng-model="selected" value="CO">CO</input>
+                                    <input type="radio" ng-model="selected" value="CO" name="compound">CO</input>
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" ng-checked="selected=='NO_2'" ng-model="selected" value="NO_2">NO_2</input>
+                                    <input type="radio"  ng-model="selected" value="NO_2" name="compound">NO_2</input>
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" ng-checked="selected=='SO_2'" ng-model="selected" value="SO_2">SO_2</input>
+                                    <input type="radio"  ng-model="selected" value="SO_2" name="compound">SO_2</input>
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" ng-checked="selected=='PM10'" ng-model="selected" value="PM10">PM10</input>
+                                    <input type="radio"  ng-model="selected" value="PM10" name="compound">PM10</input>
                                 </label>
                             </div>
                             <code>{{selected}}</code>

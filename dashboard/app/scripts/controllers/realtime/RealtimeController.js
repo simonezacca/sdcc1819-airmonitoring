@@ -18,6 +18,7 @@ mainAngularModule
             ctrl.getSingleCompoundData = getSingleCompoundDataFn;
             ctrl.setDataAll = setDataAllFn;
             ctrl.setDataSingle = setDataSingleFn;
+            ctrl.setTimestampForAllCompounds = setTimestampForAllCompoundsFn;
             ctrl.chemical_compounds = ["NO_2", "CO", "SO_2", "PM10"];
             ctrl.realtimeDataAll = [];
             ctrl.realtimeDataSingle = [];
@@ -63,7 +64,7 @@ mainAngularModule
 
             //button for single compound chart
             $scope.radioModel = 'CO';
-            $scope.selected = ['CO', 'NO_2', "SO_2", "PM10"];
+            $scope.selected = "CO";
             //
 
 
@@ -234,41 +235,66 @@ mainAngularModule
 
             ctrl.timestampAllDefault = {
                 timestampStart:'1538405120',
-                timestampEnd:'1546267520'};
+                timestampEnd:'1546267520'
+                //timestampStart:'1535780100',
+                //timestampEnd:'1578461100'
+            };
 
-            ctrl.timestampAll = {};
+            ctrl.timestampAll = {
+                timestampStart: '',
+                timestampEnd: ''
+            };
 
             ctrl.timestampSingle = {};
 
             getAllCompoundDataFn(ctrl.timestampAllDefault);
             getSingleCompoundDataFn(ctrl.timestampAllDefault);
 
-            function setDataAllFn() {
-                console.log(ctrl.realtimeDataAll[0].Items);
-                for(var i=0; i<4; i++){
-                    allLine.data.datasets[i].label = ctrl.chemical_compounds[i];
-
-                    var curData = ctrl.realtimeDataAll[i].Items;
-
-                    curData.forEach(
-                        function(cp) {
-                            var dataPoint = {
-                                y: parseFloat(cp.value.N),
-                                x: parseFloat(cp.timestamp.N)
-                            };
-                            allLine.data.datasets[i].data.push(dataPoint);
-                            allLine.data.datasets[i].labels.push("Ciao");
-                        }
-                    );
-
+            function isEmpty(obj) {
+                for(var key in obj) {
+                    if(obj.hasOwnProperty(key))
+                        return false;
                 }
-                console.log(allLine.data.datasets);
-                allChart.update();
+                return true;
+            }
+
+            function setTimestampForAllCompoundsFn(){
+                //Convert Epoch to UNIX Timestamp
+                ctrl.timestampAll.timestampStart = Date.parse($scope.dateRangeStart)/1000;
+                ctrl.timestampAll.timestampEnd = Date.parse($scope.dateRangeEnd)/1000;
+                console.log("TimeStampStart: " + ctrl.timestampAll.timestampStart);
+                console.log("TimeStampEnd: " + ctrl.timestampAll.timestampEnd);
+                getAllCompoundDataFn(ctrl.timestampAll);
+            }
+
+            function setDataAllFn() {
+                if (ctrl.realtimeDataAll[0].Items.length == 0) {
+                console.log("ctrl.realtimeDataAll is empty: ")
+                    allChart.update();
+                } else {
+                    for (var i = 0; i < 4; i++) {
+                        allLine.data.datasets[i].label = ctrl.realtimeDataAll[i].Items[0].chemical_compound.S;
+
+                        var curData = ctrl.realtimeDataAll[i].Items;
+                        curData.forEach(
+                            function (cp) {
+                                var dataPoint = {
+                                    y: parseFloat(cp.value.N),
+                                    x: parseFloat(cp.timestamp.N)
+                                };
+                                allLine.data.datasets[i].data.push(dataPoint);
+                                allLine.data.datasets[i].labels.push("Ciao");
+                            }
+                        );
+
+                    }
+                    console.log(allLine.data.datasets);
+                    allChart.update();
+                }
             }
 
             function setDataSingleFn() {
-                //singleLine.data.dataset[0].label = $stateParams.chemical_compound;
-                singleLine.data.datasets[0].label = "NO_2";
+                singleLine.data.datasets[0].label = $scope.selected;
 
                 var curData = ctrl.realtimeDataSingle.Items;
                 curData.forEach(
@@ -277,6 +303,7 @@ mainAngularModule
                             y: parseFloat(cp.value.N),
                             x: parseFloat(cp.timestamp.N)
                         };
+                        console.log(JSON.stringify(dataPoint));
                         singleLine.data.datasets[0].data.push(dataPoint);
                     }
                 );
@@ -286,12 +313,16 @@ mainAngularModule
 
             function getAllCompoundDataFn(timestamp) {
                 console.log("refresh data");
+                console.log("start " + ctrl.timestampAll.timestampStart);
+                console.log("end " + ctrl.timestampAll.timestampEnd);
+                clearData();
                 var dataPromises = [];
                 for(var i=0; i<4; i++){
                     var prom = $q.defer();
                     RealtimeFactory.GetSingleQ1(ctrl.chemical_compounds[i], timestamp,
                         function (realtimeDataSingle) {
                             ctrl.realtimeDataAll.push(realtimeDataSingle);
+                            console.log("REALTIMEDATA DOPO: " + JSON.stringify(ctrl.realtimeDataAll));
                             //prom.resolve();
 
                         },
@@ -300,21 +331,18 @@ mainAngularModule
                             ErrorStateRedirector.GoToErrorPage({Messaggio: "Errore nell'import dei dati"});
                         });
                     dataPromises.push(prom.promise);
+
                 }
 
                 $q.all(dataPromises).then(function (value) {
                     setDataAllFn();
                 }, function (error) { console.log(error) });
-                /*setTimeout(function() {
-                    setDataAllFn();
-                },10000);*/
 
 
             }
 
             function getSingleCompoundDataFn(timestamp) {
-                //var chemicalCompound = $stateParams.chemical_compound;
-                var chemicalCompound = "NO_2";
+                var chemicalCompound = $scope.selected;
                 RealtimeFactory.GetSingleQ1(chemicalCompound, timestamp,
                     function (realtimeData) {
                         ctrl.realtimeDataSingle = realtimeData;
@@ -326,4 +354,12 @@ mainAngularModule
 
             }
 
+            function clearData()
+            {
+                for(var i =0; i<4; i++){
+                    allLine.data.datasets[i].data = [];
+                    console.log("Cancellazione: " + allLine.data.datasets[i].data + "i-esima: "+ i);
+                }
+                ctrl.realtimeDataAll = [];
+            }
         }]);
