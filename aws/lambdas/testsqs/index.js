@@ -8,7 +8,7 @@ exports.handler = function(event, context, callback){
 
     console.log("test lambda result: " + event.Records[0].body);
     dynamoDB.putItem({
-        TableName: "test-dynamo",      //creare tabella in dynamoDB
+        TableName: "flink-query1",      //creare tabella in dynamoDB
         Item: {     // definire tutti i campi da inserire nella query
             "chemical_compound": {     //capire come prendere tutti i valori dal body del msg sqs
                 "S": jsonObject.chemical_compound

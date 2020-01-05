@@ -260,8 +260,8 @@ mainAngularModule
 
             function setTimestampForAllCompoundsFn(){
                 //Convert Epoch to UNIX Timestamp
-                ctrl.timestampAll.timestampStart = Date.parse($scope.dateRangeStart)/1000;
-                ctrl.timestampAll.timestampEnd = Date.parse($scope.dateRangeEnd)/1000;
+                ctrl.timestampAll.timestampStart = Date.parse($scope.dateRangeStart);
+                ctrl.timestampAll.timestampEnd = Date.parse($scope.dateRangeEnd);
                 console.log("TimeStampStart: " + ctrl.timestampAll.timestampStart);
                 console.log("TimeStampEnd: " + ctrl.timestampAll.timestampEnd);
                 getAllCompoundDataFn(ctrl.timestampAll);

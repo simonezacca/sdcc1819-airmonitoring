@@ -40,6 +40,8 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Jso
         for (Double d: elements) {
             sb.append(d+"\t");
             // inserire this.limitValue
+            //TODO Modificare in d.doubleValue()
+
             if(d.longValue() >= this.limitValue){
                 this.counterMap.hit(s);
                 double excessValue = stringToExcessForCompound(this.limitValueMap.getLimitValue(this.compoundName)._3());
