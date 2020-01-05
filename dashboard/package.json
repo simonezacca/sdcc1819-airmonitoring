@@ -52,6 +52,8 @@
     "test": "grunt test",
     "start": "grunt serve",
     "dist": "grunt serve:dist",
-    "postinstall": "bower install"
+    "postinstall": "bower install",
+    "deploy" : "aws s3 cp dist s3://<your bucket name> --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive",
+    "predeploy" : "rm -rf dist; grunt build"
   }
 }

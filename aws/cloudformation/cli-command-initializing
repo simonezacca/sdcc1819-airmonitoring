@@ -11,6 +11,19 @@ ParameterKey=EfsDnsName,ParameterValue=fs-c276849a.efs.eu-central-1.amazonaws.co
 --capabilities CAPABILITY_IAM
 
 --------------------------------------------------------------------
+    Update lambda ENV variable that depends on ELB Service
+--------------------------------------------------------------------
+
+LBDNSNAME=$(aws cloudformation describe-stacks --stack-name sdcc-air-monitoring \
+--query "Stacks[0].Outputs[?OutputKey=='ExternalUrl'].OutputValue" --output text)
+LBDNSNAME=${LBDNSNAME:7}
+echo $LBDNSNAME
+aws lambda update-function-configuration --function-name influx24h \
+--environment "Variables={INFLUXURL=$LBDNSNAME,ELASTICACHEHOST=$LBDNSNAME}"
+aws lambda update-function-configuration --function-name readfromelasticache \
+--environment "Variables={ELASTICACHEHOST=$LBDNSNAME}"
+
+--------------------------------------------------------------------
     Creation ecs environment
 --------------------------------------------------------------------
 
