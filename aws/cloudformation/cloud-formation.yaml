@@ -244,6 +244,7 @@ Resources:
       LoadBalancerNames: [!Ref PublicLoadBalancer]
     CreationPolicy:
       ResourceSignal:
+        #Count: !Ref DesiredCapacity
         Timeout: PT15M
     UpdatePolicy:
       AutoScalingReplacingUpdate:
