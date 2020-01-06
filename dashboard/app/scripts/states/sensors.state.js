@@ -21,4 +21,10 @@ mainAngularModule.config(['$stateProvider',
                 controller: 'SensorsController',
                 controllerAs: 'ctrl'
             })
+            .state('sensors.maps', {
+                url: '/maps',
+                templateUrl: 'views/sensors/sensors-maps.html',
+                controller: 'SensorsMapsController',
+                controllerAs: 'ctrl'
+            })
     }]);

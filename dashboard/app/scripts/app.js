@@ -14,5 +14,6 @@ var mainAngularModule = angular
         'ngWebsocket',
         'toastr',
         'chart.js',
-        'ui.bootstrap.datetimepicker'
+        'ui.bootstrap.datetimepicker',
+        'ngMap'
     ]);

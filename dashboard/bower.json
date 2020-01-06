@@ -28,7 +28,8 @@
     "angular-swx-session-storage": "^1.0.2",
     "angular-toastr": "2.1.1",
     "ng-websocket": "0.2.1",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "ngmap": "^1.18.4"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",
