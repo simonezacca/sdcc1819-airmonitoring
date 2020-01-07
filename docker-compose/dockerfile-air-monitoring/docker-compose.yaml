@@ -66,6 +66,8 @@ services:
         tty: true
         mem_limit: 512m
         mem_reservation: 256m
+        volumes:
+            - "/mnt/sdcc-airmonitoring-data/dataset-sender:/dataset-sender/csv_dataset"
         logging: 
             driver: awslogs
             options:
