@@ -70,6 +70,10 @@ mainAngularModule
                                         "state": "sensors.maps"
                                     },
                                     {
+                                        "nome": "Failures",
+                                        "state": "sensors.failures"
+                                    },
+                                    {
                                         "nome": "Add Sensor",
                                         "state": "sensors.create"
                                     }

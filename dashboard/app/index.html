@@ -1,5 +1,12 @@
 <!doctype html>
 <html class="no-js">
+<body>
+<div ng-app="TicketingSystemApp">
+    <!--<toaster-container></toaster-container>-->
+    <div ui-view></div>
+</div>
+</body>
+
 <head>
     <meta charset="utf-8">
     <title></title>
@@ -92,6 +99,7 @@
     <script src="scripts/controllers/realtime/RealtimeController.js"></script>
     <script src="scripts/controllers/sensors/SensorsController.js"></script>
     <script src="scripts/controllers/sensors/SensorsMapsController.js"></script>
+    <script src="scripts/controllers/sensors/SensorsFailuresController.js"></script>
     <script src="scripts/controllers/alarms/AlarmsController.js"></script>
     <!-- endbuild -->
 
@@ -104,6 +112,7 @@
     <script src="scripts/service/BatchDataUtils.js"></script>
     <script src="scripts/service/RealtimeFactory.js"></script>
     <script src="scripts/service/SensorsFactory.js"></script>
+    <script src="scripts/service/SensorsFailuresFactory.js"></script>
     <script src="scripts/service/AlarmsFactory.js"></script>
     <script src="scripts/service/WSAlarmFactory.js"></script>
     <!-- endbuild -->
@@ -114,12 +123,5 @@
 
 
 </head>
-
-<body>
-<div ng-app="TicketingSystemApp">
-    <!--<toaster-container></toaster-container>-->
-    <div ui-view></div>
-</div>
-</body>
 
 </html>

@@ -27,4 +27,10 @@ mainAngularModule.config(['$stateProvider',
                 controller: 'SensorsMapsController',
                 controllerAs: 'ctrl'
             })
+            .state('sensors.failures', {
+                url: '/failures',
+                templateUrl: 'views/sensors/sensors-failures.html',
+                controller: 'SensorsFailuresController',
+                controllerAs: 'ctrl'
+            })
     }]);
