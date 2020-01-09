@@ -190,6 +190,8 @@ services:
             - AWS_REGION=eu-central-1
             - AWS_FORMAT=json
             - FLINK_ENV_JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,address=5007,server=y,suspend=n
+            - FLINK_JAR=/flink-analyzer/jar/flink-analyzer-1.0-SNAPSHOT.jar
+            - FLINK_CLASS=sdcc1819.Query1,sdcc1819.SensorFailure
         volumes:
             - ./flink-analyzer:/flink-analyzer
             
