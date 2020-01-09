@@ -63,4 +63,5 @@ dist
 .sass-cache
 bower_components
 .idea
+package-lock.json
 
