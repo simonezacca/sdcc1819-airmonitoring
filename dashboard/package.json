@@ -53,7 +53,7 @@
     "start": "grunt serve",
     "dist": "grunt serve:dist",
     "postinstall": "bower install",
-    "deploy": "aws s3 cp dist s3://<your bucket name> --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive",
+    "deploy": "aws s3 cp dist s3://air-monitoring-dashboard --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive",
     "predeploy": "rm -rf dist; grunt build"
   }
 }
