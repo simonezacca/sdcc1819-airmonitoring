@@ -42,6 +42,7 @@ import java.util.Properties;
 
 public class SensorFailure implements Serializable {
 
+    public static final int EXPECTED_HIT_IN_ONE_DAY = 24;
     public static final int COUNTER_THRESHOLD = 5;
 
     public static final String topicArn = "arn:aws:sns:eu-central-1:402165574974:sensor-failure-alarm";
@@ -104,7 +105,7 @@ public class SensorFailure implements Serializable {
                         String sensorId = stringLongTuple2.f0;
                         Long counterIn24h = stringLongTuple2.f1;
 
-                        if (counterIn24h<=COUNTER_THRESHOLD) {
+                        if (counterIn24h <= EXPECTED_HIT_IN_ONE_DAY - COUNTER_THRESHOLD) {
                             InitAmazonSNS instanceSNS = InitAmazonSNS.getInstance();
 
                             // Publish a message to an Amazon SNS topic.
