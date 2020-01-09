@@ -7,10 +7,10 @@
   <packaging>pom</packaging>
   <name>airmonitoring</name>
   
-<modules>  <module>dataset-generator</module>
+<modules>
+    <module>model</module>
+    <module>dataset-generator</module>
     <module>dataset-sender</module>
     <module>flink-analyzer</module>
-    <module>influxdb-analyzer</module>
-    <module>model</module>
   </modules>
 </project>
