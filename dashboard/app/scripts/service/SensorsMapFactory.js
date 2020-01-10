@@ -24,8 +24,7 @@ mainAngularModule
                     },
                     (error) => {
                         console.error(error);
-                    },
-
+                    }
                 );
             }
 
