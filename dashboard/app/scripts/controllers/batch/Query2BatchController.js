@@ -9,11 +9,13 @@
 
 mainAngularModule
     .controller('Query2BatchController', ['$scope', '$state', 'BatchFactory', 'DTOptionsBuilder', 'DTColumnDefBuilder',
-        'ErrorStateRedirector', 'BatchDataUtils' ,
-        function ($scope, $state, BatchFactory, DTOptionsBuilder, DTColumnDefBuilder, ErrorStateRedirector,BatchDataUtils) {
+        'ErrorStateRedirector', 'BatchDataUtils' , 'SensorsMapFactory',
+        function ($scope, $state, BatchFactory, DTOptionsBuilder, DTColumnDefBuilder, ErrorStateRedirector,
+                  BatchDataUtils,SensorsMapFactory) {
 
 
-            var ctrl = this;
+            let ctrl = this;
+
             ctrl.refreshInfluxData = refreshInfluxDataFn;
 
             $scope.ColorBar = ['#90EE90', '#FF6600'];
@@ -45,9 +47,12 @@ mainAngularModule
                 console.log("refresh data");
                 BatchFactory.GetAllQ2(
                     function (batchData) {
-                        //console.log(batchData);
                         ctrl.query2DataForChart = BatchDataUtils.GetDataForChart(batchData);
-
+                        SensorsMapFactory.GetAdaptedSensors(
+                            (adaptedSensors) => {
+                                ctrl.query2DataForMap = BatchDataUtils.GetDataForMap(adaptedSensors,ctrl.query2DataForChart);
+                            }
+                        );
                     }, function (error) {
                         ErrorStateRedirector.GoToErrorPage({Messaggio: "Errore nell'import dei dati"});
                     });

@@ -7,32 +7,45 @@
     </div>
     <div class="col-lg-12">
         <div class="row">
-            <div class="panel panel-primary" ng-repeat="problemData in ctrl.query2DataForChart">
-                <div class="panel-heading">{{problemData.problem_description}}</div>
-                <div class="panel-body">
-                    <div class="card mb-3">
-                        <section>
-                            <div class="row">
-                                <div class="col-md-12">
-                                <div class="chart-container">
-                                    <canvas width='700' height='200'
-                                            class="chart chart-bar"
-                                            chart-data="problemData.data"
-                                            chart-labels="problemData.labels"
-                                            chart-series="problemData.series"
-                                            chart-click="onClick" chart-options="options"
-                                            chart-dataset-override="datasetOverride"
-                                    ></canvas>
+            <uib-tabset active="active">
+                <uib-tab index="$index" ng-repeat="problemData in ctrl.query2DataForChart" heading="{{problemData.problem_description}}">
+                    <div class="panel-body">
+                        <div class="card mb-3">
+                            <section>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="chart-container">
+                                            <canvas width='700' height='200'
+                                                    class="chart chart-bar"
+                                                    chart-data="problemData.data"
+                                                    chart-labels="problemData.labels"
+                                                    chart-series="problemData.series"
+                                                    chart-click="onClick" chart-options="options"
+                                                    chart-dataset-override="datasetOverride"
+                                            ></canvas>
+                                        </div>
+                                    </div>
                                 </div>
+                            </section>
+                        </div>
+                        <div class="card mb-3">
+                            <section>
+                                <div map-lazy-load="https://maps.google.com/maps/api/js">
+                                <ng-map center="40.42,-3.77" zoom="11" default-style="false" style="height: 500px">
+                                    <marker ng-repeat="s in ctrl.query2DataForMap[$index]"
+                                            id='{{s.sensor_id}}'
+                                            position="{{s.pos}}"
+                                            data="{{s.sensor_id}}"
+                                            title="sensor_id: {{s.sensor_id}}"
+                                            icon="{{s.icon}}"
+                                    ></marker>
+                                </ng-map>
                                 </div>
-                            </div>
-                        </section>
+                            </section>
+                        </div>
                     </div>
-                    <!-- /.table-responsive -->
-                </div>
-                <!-- /.panel-body -->
-            </div>
-            <!-- /.panel -->
+                </uib-tab>
+            </uib-tabset>
         </div>
     </div>
 </div>

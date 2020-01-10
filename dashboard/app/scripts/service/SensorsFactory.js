@@ -32,7 +32,7 @@ mainAngularModule
                     url: _endPointAPIGATEWAY
                 })
                     .then(function (response) {
-                            console.log(response.data);
+                            //console.log(response.data);
                             if (successCB) {
                                 successCB(response.data);
                             }
