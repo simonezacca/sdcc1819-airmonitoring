@@ -38,27 +38,7 @@ public class Query1 implements Serializable {
     private static CreateQueueRequest createQueueRequest;
 
     public Query1(){};
-
-    /*
-    private static void init(){
-        //System.out.println("AWS_SECRET_ACCESS_KEY: " + System.getenv("AWS_SECRET_ACCESS_KEY"));
-        sqs = AmazonSQSClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider()).build();
-
-        try {
-            System.out.println("Inizializzo SQS");
-            createQueueRequest = new CreateQueueRequest(QUEUE_NAME);
-        } catch (AmazonSQSException e) {
-            if (!e.getErrorCode().equals("QueueAlreadyExists")) {
-                throw e;
-            }
-        }
-        //queueUrl = sqs.getQueueUrl(QUEUE_NAME).getQueueUrl();
-        queueUrl = sqs.createQueue(createQueueRequest).getQueueUrl();
-        System.out.println("Queue created, queueUrl: " + queueUrl);
-    }
-    */
-
-
+    
     public static void main(String[] args) {
 
         Query1 query1 = new Query1();
@@ -71,7 +51,6 @@ public class Query1 implements Serializable {
         properties.setProperty("bootstrap.servers", "kafka:9092");
         properties.setProperty("zookeeper.connect", "zookeper:2181");
         properties.setProperty("group.id", "test");
-        //properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
 
         // Istanza della classe Kafka Consumer (per Flink)
         FlinkKafkaConsumer consumer = new FlinkKafkaConsumer<String>("JSONPROTO", new SimpleStringSchema(), properties);
@@ -96,7 +75,6 @@ public class Query1 implements Serializable {
                 .assignTimestampsAndWatermarks(new DateTimeAscendingAssigner())
                 .filter(new DiscardEmptyValues())
                 .flatMap(new SensorExtractor())
-                //.filter(s -> s.containsAgent("NO_2"))
                 .keyBy(new KeyBySensorID());
 
         /* Divido i flussi per composto chimico e li inserisco all'interno di una Map
@@ -113,8 +91,6 @@ public class Query1 implements Serializable {
             Time averagingPeriod = StringToTimeUnit.stringToFlinkTimeUnit(limitTupleForCompound._2());
             compoundStream
                     .keyBy(new KeyBySensorID())
-                    // TODO cambiare sliding Window a 15minuti?
-                    //.timeWindow(averagingPeriod,Time.hours(1))
                     .timeWindow(averagingPeriod)
                     .aggregate(new ChemicalCompoundMean(compoundString), new ChemicalCompoundCollector(compoundString))
                     .map(query1::sendMessagesSQS); //passare variabile query1 inizializzata prima come  arogmento della funzione sendMessagesSQS
@@ -135,23 +111,7 @@ public class Query1 implements Serializable {
                 .withQueueUrl(instanceSQS.getQueueUrl())
                 .withMessageBody(String.valueOf(jsonObject))
                 .withDelaySeconds(5);
-        /*SendMessageRequest send_msg_request = new SendMessageRequest()
-                .withQueueUrl(queueUrl)
-                .withMessageBody("Messaggio di prova")
-                .withDelaySeconds(5);*/
         instanceSQS.getSqs().sendMessage(send_msg_request);
-
-
-        // Send multiple messages to the queue
-        /*SendMessageBatchRequest send_batch_request = new SendMessageBatchRequest()
-                .withQueueUrl(queueUrl)
-                .withEntries(
-                        new SendMessageBatchRequestEntry(
-                                "msg_1", "Hello from message 1"),
-                        new SendMessageBatchRequestEntry(
-                                "msg_2", "Hello from message 2")
-                                .withDelaySeconds(10));
-        sqs.sendMessageBatch(send_batch_request);*/
         return jsonObject;
     }
 

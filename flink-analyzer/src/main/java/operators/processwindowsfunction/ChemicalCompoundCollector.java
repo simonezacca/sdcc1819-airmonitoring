@@ -19,8 +19,6 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Jso
     Double limitValue;
     String compoundName;
     CounterMap counterMap;
-    //AmazonSNSClientBuilder builder;
-    //AmazonSNS client;
     String topicArn = "arn:aws:sns:eu-central-1:402165574974:chemicalcompound-alarm";
 
     public ChemicalCompoundCollector(String compoundName) {
@@ -39,13 +37,9 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Jso
 
         for (Double d: elements) {
             sb.append(d+"\t");
-            // inserire this.limitValue
-            //TODO Modificare in d.doubleValue()
-
-            if(d.longValue() >= this.limitValue){
+            if(d >= this.limitValue){
                 this.counterMap.hit(s);
                 double excessValue = stringToExcessForCompound(this.limitValueMap.getLimitValue(this.compoundName)._3());
-                // Inserire excessValue
                 if(this.counterMap.get(s) >= excessValue) {
                     InitAmazonSNS instanceSNS = InitAmazonSNS.getInstance();
 
@@ -63,7 +57,7 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Jso
         if (counterMap.containsKey(s)) {
             sb.append("Limit Value Counter: " + this.counterMap.get(s));
         }
-        //out.collect(sb.toString());
+
         System.out.println("Stat: " + sb.toString());
         out.collect(writeToJson(compoundName, average, s, context.window().getStart()));
         }
@@ -87,11 +81,4 @@ public class ChemicalCompoundCollector extends ProcessWindowFunction<Double, Jso
         return jsonObject;
     }
 
-    /*
-    private void init(){
-        builder = AmazonSNSClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider());
-        client = builder.build();
-    }
-
-    */
 }

@@ -34,10 +34,6 @@ mainAngularModule
                                     {
                                         "nome": "Query1",
                                         "state": "realtime.query1"
-                                    },
-                                    {
-                                        "nome": "Query2",
-                                        "state": "realtime.query2"
                                     }
                                 ]
                             },
@@ -47,11 +43,11 @@ mainAngularModule
                                 "icon": "fa-cogs",
                                 item:[
                                     {
-                                        "nome": "Query1",
+                                        "nome": "Season Pollution",
                                         "state": "batch.query1"
                                     },
                                     {
-                                        "nome": "Query2",
+                                        "nome": "Health Problems Geolocalized",
                                         "state": "batch.query2"
                                     }
                                 ]
