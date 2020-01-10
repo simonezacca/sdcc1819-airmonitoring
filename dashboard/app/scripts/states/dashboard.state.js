@@ -15,8 +15,8 @@ mainAngularModule.config(['$stateProvider', '$urlRouterProvider',
             })
             .state('dashboard.home', {
                 url: '/home',
-                controller: 'MainCtrl',
-                templateUrl: 'views/dashboard/home.html',
+                controller: 'RealtimeController',
+                templateUrl: 'views/realtime/realtime-query1.html',
                 /*data: {
                     requiresLogin: true
                 }*/
