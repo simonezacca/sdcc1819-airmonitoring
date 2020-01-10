@@ -46,6 +46,14 @@ public class ParserCSV {
         }
     }
 
+    private String safeGet(String columnName, CSVRecord record) {
+        String result = "";
+        if (record.isSet(columnName)) {
+            result = record.get(columnName);
+        }
+        return result;
+    }
+
 
     public ArrayList<Data> parseFile(){
         int i = 0;
@@ -75,18 +83,18 @@ public class ParserCSV {
 
             }
             LocalDateTime formatDateTime = LocalDateTime.parse(DATE, formatter);
-            BEN = csvRecord.get("BEN");
-            CH4 = csvRecord.get("CH4");
-            CO = csvRecord.get("CO");
-            EBE = csvRecord.get("EBE");
-            NMHC = csvRecord.get("NMHC");
-            NO = csvRecord.get("NO");
-            NO_2 = csvRecord.get("NO_2");
-            NOx = csvRecord.get("NOx");
-            O_3 = csvRecord.get("O_3");
-            PM10 = csvRecord.get("PM10");
-            SO_2 = csvRecord.get("SO_2");
-            TCH = csvRecord.get("TCH");
+            BEN     = safeGet("BEN",csvRecord);
+            CH4     = safeGet("CH4",csvRecord);
+            CO      = safeGet("CO",csvRecord);
+            EBE     = safeGet("EBE",csvRecord);
+            NMHC    = safeGet("NMHC",csvRecord);
+            NO      = safeGet("NO",csvRecord);
+            NO_2    = safeGet("NO_2",csvRecord);
+            NOx     = safeGet("NOx",csvRecord);
+            O_3     = safeGet("O_3",csvRecord);
+            PM10    = safeGet("PM10",csvRecord);
+            SO_2    = safeGet("SO_2",csvRecord);
+            TCH     = safeGet("TCH",csvRecord);
             sensorID = csvRecord.get("station");
             s = createSensor(sensorID, NO, CO, PM10, BEN, CH4, EBE, NMHC, NO_2, NOx, O_3, SO_2, TCH);
             sensors.add(s);
