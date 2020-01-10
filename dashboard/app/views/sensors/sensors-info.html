@@ -28,12 +28,12 @@
                             <tbody>
                             <tr ng-repeat="s in ctrl.sensors">
                                 <td>{{s.sensor_id.S}}</td>
-                                <td>{{s.CO.BOOL}}</td>
-                                <td>{{s.NO_2.BOOL}}</td>
-                                <td>{{s.PM10.BOOL}}</td>
-                                <td>{{s.SO_2.BOOL}}</td>
+                                <td><i ng-class="{'fa fa-check': s.CO.BOOL  ,'fa fa-times': !s.CO.BOOL }"></i></td>
+                                <td><i ng-class="{'fa fa-check': s.NO_2.BOOL  ,'fa fa-times': !s.NO_2.BOOL }"></i></td>
+                                <td><i ng-class="{'fa fa-check': s.PM10.BOOL  ,'fa fa-times': !s.PM10.BOOL }"></i></td>
+                                <td><i ng-class="{'fa fa-check': s.SO_2.BOOL  ,'fa fa-times': !s.SO_2.BOOL }"></i></td>
                                 <td>{{s.lat.S}}</td>
-                                <td>{{s.lon.S   }}</td>
+                                <td>{{s.lon.S}}</td>
                                 <td align="right">
                                     <button class="btn btn-danger"
                                             ng-click="ctrl.deleteSensor(s.sensor_id.S)" title="Delete">
