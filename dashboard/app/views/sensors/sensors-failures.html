@@ -23,7 +23,7 @@
                             <tbody>
                             <tr ng-repeat="s in ctrl.sensors_failues">
                                 <td>{{s.sensor_id.S}}</td>
-                                <td>{{s.timestamp.N * 1000 | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <td>{{s.timestamp.N | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                 <td>{{s.fault_counter.N}}</td>
                             </tr>
                             </tbody>

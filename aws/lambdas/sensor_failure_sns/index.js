@@ -16,7 +16,7 @@ exports.handler = function(event, context, callback){
                 "N": jsonObject.timestamp
             },
             "fault_counter" : {
-                "N": jsonObject.fault_counter
+                "N": jsonObject.fault_counter.toString()
             }
         }
     }, function (err, data) {
